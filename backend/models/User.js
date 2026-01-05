@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
   googleId: String,
   provider: String,
 
-  educationHistory: [predictionSchema]   // 🔥 NEW
+  educationHistory: [predictionSchema]  
 });
 
 module.exports = mongoose.model('User', userSchema);

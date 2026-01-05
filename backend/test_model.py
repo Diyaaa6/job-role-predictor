@@ -2,18 +2,13 @@ import joblib
 import pandas as pd
 import numpy as np
 
-# ===============================
-# LOAD MODEL & ENCODERS
-# ===============================
 model = joblib.load("random_forest_model.pkl")
 degree_enc = joblib.load("degree_encoder.pkl")
 spec_enc = joblib.load("specialization_encoder.pkl")
 skills_mlb = joblib.load("skills_binarizer.pkl")
 job_enc = joblib.load("jobrole_label_encoder.pkl")
 
-# ===============================
-# FUNCTION TO PREDICT JOB ROLE
-# ===============================
+
 def predict_job_role(
     degree: str,
     specialization: str,
@@ -23,16 +18,15 @@ def predict_job_role(
     projects: int,
     skills: list
 ):
-    # Encode degree & specialization
+
     deg_val = degree_enc.transform([degree])[0]
     spec_val = spec_enc.transform([specialization])[0]
     internship_val = 1 if internship.lower() == "yes" else 0
 
-    # Encode skills using multi-hot
     skill_vector = skills_mlb.transform([skills])
     skill_df = pd.DataFrame(skill_vector, columns=skills_mlb.classes_)
 
-    # Combine all features into single dataframe
+
     data = pd.DataFrame({
         "Degree": [deg_val],
         "Specialization": [spec_val],
@@ -44,7 +38,7 @@ def predict_job_role(
 
     X_input = pd.concat([data, skill_df], axis=1)
 
-    # Predict probabilities
+    
     probs = model.predict_proba(X_input)[0]
     top_indices = np.argsort(probs)[::-1][:3]
 
@@ -62,9 +56,6 @@ def predict_job_role(
 
     return result
 
-# ===============================
-# EXAMPLES (TESTING)
-# ===============================
 if __name__ == "__main__":
     test_inputs = [
         {

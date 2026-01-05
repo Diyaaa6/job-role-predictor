@@ -231,8 +231,6 @@
     </button>
 </div>
 </header>
-      
-      <!-- ================= HOME DASHBOARD ================= -->
   
 <section id="home-dashboard" class="content-section space-y-8">
 
@@ -609,7 +607,6 @@ const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 let radarChart = null;
 
-// --- AUTH UI NAVIGATION ---
 $('#tab-login').onclick = () => { $('#login-view').classList.remove('hidden'); $('#register-view').classList.add('hidden'); $('#tab-login').classList.add('active'); $('#tab-register').classList.remove('active'); };
 $('#tab-register').onclick = () => { $('#login-view').classList.add('hidden'); $('#register-view').classList.remove('hidden'); $('#tab-register').classList.add('active'); $('#tab-login').classList.remove('active'); };
 
@@ -655,8 +652,6 @@ function updateRadar(edu) {
                 },
                 plugins: {
                     legend: { display: false },
-
-                    // 🔥 SKILL BREAKDOWN TOOLTIP
                     tooltip: {
                         callbacks: {
                             label: function (context) {
@@ -701,7 +696,6 @@ function updateRoadmap(edu) {
     const roadmapContainer = $('#roadmap-steps');
     if(!roadmapContainer) return;
     
-    // Logic for individual milestone completion
     const isGraduated = edu.yearOfGraduation <= 2026;
     const hasInternship = edu.internship === 'Yes';
     const hasProjects = edu.projects >= 3;
@@ -714,18 +708,15 @@ function updateRoadmap(edu) {
         { label: "Career Ready", done: isReady }
     ];
 
-    // 🔥 NEW: Calculate Progress Percentage
     const completedCount = steps.filter(s => s.done).length;
     const progressPercent = Math.round((completedCount / steps.length) * 100);
 
-    // 🔥 NEW: Update Progress Bar UI
     const progressBar = $('#roadmap-progress-bar');
     const percentText = $('#roadmap-percent');
     
     if (progressBar) progressBar.style.width = `${progressPercent}%`;
     if (percentText) percentText.textContent = `${progressPercent}%`;
 
-    // Render individual step icons
     roadmapContainer.innerHTML = steps.map((step, index) => `
         <div class="${index < 3 ? 'step-line' : ''}">
             <div class="icon w-14 h-14 ${step.done ? 'bg-green-100 text-green-600 shadow-green-100' : 'bg-gray-100 text-gray-400'} rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm transition-all duration-500">
@@ -741,10 +732,8 @@ function updateUI(user) {
     const history = user.educationHistory || [];
     const edu = user.education || (history.length ? history.at(-1) : {});
 
-    /* ========= NAV ========= */
     $('#nav-username').textContent = user.username || "User";
 
-    /* ========= FORM PREFILL ========= */
     $('#st-name').value = user.username || "";
     $('#st-spec').value = edu.specialization || "";
     $('#st-cgpa').value = edu.cgpa || "";
@@ -755,7 +744,6 @@ function updateUI(user) {
     $('#st-proj-count').value = edu.projects || 0;
     $('#st-intern').value = edu.internship || "No";
 
-    /* ========= PREDICTION ========= */
     if (edu.predictedJobRole && edu.predictedJobRole !== "Pending") {
         $('#hero-prediction').textContent = edu.predictedJobRole;
 
@@ -764,7 +752,6 @@ function updateUI(user) {
         $('#readiness-val').textContent = score + "%";
         $('#history-text').textContent = "Matched: " + edu.predictedJobRole;
 
-        /* ========= TOP MATCHES (CLICK TO COMPARE) ========= */
         const matchesList = $('#top-matches-list');
         matchesList.innerHTML = "";
 
@@ -794,7 +781,7 @@ function updateUI(user) {
             matchesList.appendChild(div);
         });
 
-        updateRadar(edu);   // default view
+        updateRadar(edu);   
         updateRoadmap(edu);
     } else {
         $('#hero-prediction').textContent = "Pending Analysis";
@@ -821,7 +808,6 @@ async function loadInsights() {
   }
 }
 
-// Handle Star Selection
 $$('#star-rating i').forEach(star => {
     star.onclick = () => {
         selectedRating = star.dataset.val;
@@ -832,7 +818,6 @@ $$('#star-rating i').forEach(star => {
     };
 });
 
-// Update the submit button listener in index.html
 $('#submit-feedback-btn').onclick = async () => {
     const token = localStorage.getItem('jwtToken');
     const comment = $('#feedback-comment').value;
@@ -843,7 +828,6 @@ $('#submit-feedback-btn').onclick = async () => {
     }
 
     try {
-        // Fetch current profile to get the correct prediction ID
         const profileRes = await fetch(`${API_BASE_URL}/profile`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -855,7 +839,6 @@ $('#submit-feedback-btn').onclick = async () => {
             return;
         }
 
-        // POST the feedback data
         const res = await fetch(`${API_BASE_URL}/feedback/submit`, {
             method: 'POST',
             headers: { 
@@ -871,8 +854,8 @@ $('#submit-feedback-btn').onclick = async () => {
 
         if (res.ok) {
             showMessage("Review submitted to database!", "success");
-            $('#feedback-comment').value = ''; // Reset the text area
-            // Reset stars
+            $('#feedback-comment').value = ''; 
+
             $$('#star-rating i').forEach(s => s.classList.replace('fa-solid', 'fa-regular'));
         } else {
             showMessage("Database rejected feedback", "error");
@@ -908,27 +891,23 @@ async function fetchPredictionHistory() {
         historyData.forEach(item => {
             const div = document.createElement('div');
             
-            // Logic for Flagged Badge
             const isFlagged = item.isFlagged ? 
                 `<span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded-full border border-red-200 uppercase">
                     <i class="fa-solid fa-circle-exclamation"></i> Flagged
                 </span>` : '';
-            
-            // Render Star Rating UI
+          
             const ratingStars = item.userRating ? 
                 `<div class="flex items-center gap-1 text-amber-500 text-xs mb-2 mt-1">
                     ${'★'.repeat(item.userRating)}${'☆'.repeat(5 - item.userRating)}
                     <span class="text-gray-400 ml-1 font-medium">(${item.userRating}/5)</span>
                 </div>` : '';
 
-            // Render Written Feedback
             const userComment = item.userComment ? 
                 `<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-[11px] text-gray-500 italic border border-gray-100 mb-3 mt-2 relative">
                     <i class="fa-solid fa-quote-left mr-1 opacity-20 text-lg absolute -top-1 -left-1"></i> 
                     <span class="relative z-10 pl-2">${item.userComment}</span>
                 </div>` : '';
             
-            // Dynamic border color based on flag status
             const borderClass = item.isFlagged ? 'border-red-500 bg-red-50/30' : 'border-violet-500';
 
             div.className = `bg-card p-5 rounded-2xl border shadow-sm mb-4 border-l-4 ${borderClass} transition-all hover:shadow-md`;
@@ -986,37 +965,29 @@ async function fetchProfileAndUpdateUI() {
 
         updateUI(user);
 
-// If the field is empty in the database, hide the image
-// ... after updateUI(user);
 const avatarImg = $('#nav-profile-pic');
 const defaultIcon = $('#nav-default-icon');
 
-// Strict check: only show if the field exists and is not empty
 if (user.profilePic && user.profilePic.trim() !== "") {
     avatarImg.src = `${API_BASE_URL}${user.profilePic}`;
     avatarImg.classList.remove('hidden');
     defaultIcon.classList.add('hidden');
 } else {
     avatarImg.classList.add('hidden');
-    avatarImg.src = ""; // Clear the URL to avoid browser "ghosting"
+    avatarImg.src = ""; 
     defaultIcon.classList.remove('hidden');
 }
-        // --- ADD THIS LOGIC HERE ---
-        // Add this to your fetchProfileAndUpdateUI function
+
 if (user.role === 'admin') {
     window.currentUserRole = 'admin';
 
-    // Show Admin Nav, Hide User Nav
     $('#user-nav').classList.add('hidden');
     $('#admin-nav').classList.remove('hidden');
 
-    // Hide all student sections
     $$('.content-section').forEach(s => s.classList.add('hidden'));
-    
-    // Show Admin Stats by default
+
     $('#admin-stats').classList.remove('hidden');
 
-    // Set Sidebar Active State
     $$('.sidebar-link').forEach(l => l.classList.remove('active'));
     $('.sidebar-link[data-target="admin-stats"]').classList.add('active');
 
@@ -1024,22 +995,18 @@ if (user.role === 'admin') {
     $('#dashboard-container').style.display = 'flex';
 
     fetchAdminStats();
-    return; // Exit to prevent student UI logic from running
+    return; 
 }
-
-
-
         $('#auth-container').style.display = 'none';
         $('#dashboard-container').style.display = 'flex';
-        // USER DEFAULT LANDING
-// USER DEFAULT LANDING
+
 $$('.content-section').forEach(s => s.classList.add('hidden'));
 $('#home-dashboard')?.classList.remove('hidden');
 
 $$('.sidebar-link').forEach(l => l.classList.remove('active'));
 $('.sidebar-link[data-target="home-dashboard"]')?.classList.add('active');
 
-// Load HOME graphs
+
 loadDegreeJobChart();
 loadDomainChart();
 loadCareerInsights();
@@ -1048,12 +1015,11 @@ loadCareerInsights();
         console.error("Profile Sync Error:", err);
     }
 }
-// 1. When the name is clicked, trigger the hidden file input
+
 $('#nav-profile-trigger').onclick = () => {
     $('#profile-file-input').click();
 };
 
-// 2. When a file is selected from local storage
 $('#profile-file-input').onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -1066,13 +1032,12 @@ $('#profile-file-input').onchange = async (e) => {
         const res = await fetch(`${API_BASE_URL}/profile/upload-pic`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
-            body: formData // Note: Content-Type is set automatically for FormData
+            body: formData
         });
 
         const data = await res.json();
         if (res.ok) {
             showMessage("Profile picture updated!", "success");
-            // Update the image on the screen immediately
             const avatarImg = $('#nav-profile-pic');
             avatarImg.src = `${API_BASE_URL}${data.profilePic}`;
             avatarImg.classList.remove('hidden');
@@ -1085,27 +1050,24 @@ $('#profile-file-input').onchange = async (e) => {
     }
 };
 
-// Retrain Button Listener
-// Remove Profile Picture Logic
+
 $('#remove-pic-btn').onclick = async () => {
     if(!confirm("Are you sure you want to permanently delete your profile photo?")) return;
     
     const token = localStorage.getItem('jwtToken');
     try {
         const res = await fetch(`${API_BASE_URL}/profile/remove-pic`, {
-            method: 'DELETE', // Must match your backend route type
+            method: 'DELETE', 
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (res.ok) {
             showMessage("Photo deleted from database", "success");
             
-            // 1. Physically clear the image element to prevent ghosting
             const avatarImg = $('#nav-profile-pic');
             avatarImg.src = ""; 
             avatarImg.classList.add('hidden');
             
-            // 2. Show the default icon
             $('#nav-default-icon').classList.remove('hidden');
         } else {
             const data = await res.json();
@@ -1117,10 +1079,9 @@ $('#remove-pic-btn').onclick = async () => {
     }
 };
 
-// index.html - Update loadCareerInsights function
 async function loadCareerInsights() {
     const token = localStorage.getItem('jwtToken');
-    const container = $('#home-dashboard'); // Or a specific insight div
+    const container = $('#home-dashboard'); 
     if (!token) return;
 
     try {
@@ -1165,13 +1126,12 @@ async function loadCareerInsights() {
         console.error("Stack-up error:", err);
     }
 }
-// Helper to toggle views without the "flash"
+
 function showAuth(shouldShow) {
     $('#auth-container').style.display = shouldShow ? 'flex' : 'none';
     $('#dashboard-container').style.display = shouldShow ? 'none' : 'flex';
 }
 
-// --- INIT DASHBOARD ---
 (function initDashboard() {
     const token = localStorage.getItem('jwtToken');
     if (token) {
@@ -1237,7 +1197,7 @@ function compareSkillRadar(edu, targetRole) {
         labels: { boxWidth: 10, font: { size: 10 } }
     },
 
-    // 🔥 TOOLTIP FOR COMPARISON MODE
+
     tooltip: {
         callbacks: {
             label: function (context) {
@@ -1297,10 +1257,8 @@ $('#academic-form').onsubmit = async (e) => {
             return;
         }
 
-        // ✅ RE-FETCH FROM BACKEND (DO NOT MANUALLY BUILD UI)
-        await fetchProfileAndUpdateUI();
 
-        // ✅ SWITCH TO DASHBOARD
+        await fetchProfileAndUpdateUI();
         $$('.sidebar-link').forEach(l => l.classList.remove('active'));
         $('.sidebar-link[data-target="main-dashboard"]').classList.add('active');
         $$('.content-section').forEach(s => s.classList.add('hidden'));
@@ -1317,7 +1275,7 @@ $('#academic-form').onsubmit = async (e) => {
     }
 };
 
-// --- LOGIN FORM ---
+
 $('#login-form').onsubmit = async (e) => {
     e.preventDefault();
     const email = $('#login-email').value;
@@ -1334,7 +1292,6 @@ $('#login-form').onsubmit = async (e) => {
         
         localStorage.setItem('jwtToken', data.token);
 
-        // Fetching the profile here will now trigger the new Admin-first logic 
         await fetchProfileAndUpdateUI();
         
         showMessage('Welcome back!', 'success');
@@ -1342,8 +1299,6 @@ $('#login-form').onsubmit = async (e) => {
         showMessage('Login failed. Check server connection.', 'error');
     }
 };
-
-// --- REGISTER FORM ---
 $('#register-form').onsubmit = async (e) => {
     e.preventDefault();
     try {
@@ -1361,7 +1316,7 @@ $('#register-form').onsubmit = async (e) => {
         } else showMessage(d.message,'error');
     } catch(err){ showMessage("Connection Error","error"); }
 };
-// Variable to store resume name for the PDF report
+
 let uploadedResumeName = "Not Provided";
 
 $('#st-resume').onchange = (e) => {
@@ -1387,16 +1342,14 @@ $('#download-insight-btn').onclick = async () => {
     const { user } = await res.json();
     const edu = user.education;
 
-    // Report Header
     doc.setFontSize(22);
-    doc.setTextColor(124, 58, 237); // Violet
+    doc.setTextColor(124, 58, 237);
     doc.text("Career Insight Report", 20, 20);
     
     doc.setFontSize(12);
     doc.setTextColor(100);
     doc.text(`Generated for: ${user.username} on ${new Date().toLocaleDateString()}`, 20, 30);
 
-    // Core Prediction
     doc.setDrawColor(200);
     doc.line(20, 35, 190, 35);
     doc.setFontSize(16);
@@ -1404,7 +1357,6 @@ $('#download-insight-btn').onclick = async () => {
     doc.text(`Primary Match: ${edu.predictedJobRole}`, 20, 45);
     doc.text(`Confidence Score: ${edu.matchPercentage}%`, 20, 55);
 
-    // Top Matches Table
     const tableData = edu.topMatches.map(m => [m.role, `${m.confidence}%`]);
     doc.autoTable({
         startY: 65,
@@ -1414,7 +1366,6 @@ $('#download-insight-btn').onclick = async () => {
         headStyles: { fillColor: [124, 58, 237] }
     });
 
-    // Roadmap Status
     const roadmapY = doc.lastAutoTable.finalY + 20;
     doc.text("Roadmap Progress:", 20, roadmapY);
     doc.setFontSize(10);
@@ -1450,13 +1401,13 @@ $('#download-history-btn').onclick = async () => {
         head: [['Date', 'Role', 'Score', 'Rating', 'User Feedback']],
         body: historyRows,
         styles: { fontSize: 8 },
-        headStyles: { fillColor: [79, 70, 229] } // Indigo
+        headStyles: { fillColor: [79, 70, 229] } 
     });
 
     doc.save("Career_Prediction_History.pdf");
 };
 
-// --- GOOGLE LOGIN ---
+
 async function handleCredentialResponse(response) {
     try {
         const res = await fetch(`${API_BASE_URL}/auth/google`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:response.credential }) });
@@ -1543,7 +1494,7 @@ async function loadDomainChart() {
   );
 }
 
-// index.html - Replace your current fetchAdminStats function
+
 async function fetchAdminStats() {
     const token = localStorage.getItem('jwtToken');
     try {
@@ -1551,7 +1502,6 @@ async function fetchAdminStats() {
             headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json(); 
-        // === ADD THESE LINES TO FIX THE 0 DISPLAY ===
         if ($('#stat-users')) $('#stat-users').textContent = data.totalUsers || 0;
         if ($('#stat-preds')) $('#stat-preds').textContent = data.totalPredictions || 0;
 
@@ -1562,12 +1512,9 @@ async function fetchAdminStats() {
             u.educationHistory.forEach(pred => {
                 const div = document.createElement('div');
                 
-                // Visual indicators for Flagged vs Stable predictions
                 const flagBadge = pred.isFlagged 
                     ? `<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded-lg border border-red-200 animate-pulse">FLAGGED</span>`
                     : `<span class="px-2 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-lg border border-green-100">STABLE</span>`;
-
-                // Display written feedback if provided
                 const commentBox = pred.userComment ? `
                     <div class="mt-2 p-3 bg-gray-50 rounded-xl border-l-4 ${pred.isFlagged ? 'border-red-400' : 'border-violet-400'} italic text-[11px] text-gray-600">
                         <i class="fa-solid fa-comment-dots mr-1"></i> "${pred.userComment}"
@@ -1594,7 +1541,6 @@ async function fetchAdminStats() {
             });
         });
         
-        // Refresh the Model Library table
         fetchRetrainHistory(); 
     } catch (err) { console.error("Admin stats fetch failed", err); }
 }
@@ -1663,11 +1609,10 @@ async function fetchFlaggedCount() {
     $('#flagged-count').textContent = `⚠️ ${data.flaggedCount}`;
 }
 
-// Add this inside your <script> tag in index.html
+
 $('#flag-current-btn').onclick = async () => {
     const token = localStorage.getItem('jwtToken');
     
-    // 1. Get current profile to find the active prediction ID
     const profileRes = await fetch(`${API_BASE_URL}/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -1679,7 +1624,6 @@ $('#flag-current-btn').onclick = async () => {
         return;
     }
 
-    // 2. Send flag request to backend
     const res = await fetch(`${API_BASE_URL}/education/flag`, {
         method: 'POST',
         headers: { 
@@ -1768,7 +1712,6 @@ async function restoreModel(id, btn) {
     }
 }
 
-// --- THEME & NAV ---
 $('#theme-toggle').onclick = ()=>{ 
     const isDark=document.body.classList.toggle('dark'); 
     localStorage.setItem('theme',isDark?'dark':'light'); 
@@ -1776,26 +1719,22 @@ $('#theme-toggle').onclick = ()=>{
 
 if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
 
-// Remove Profile Picture Logic
 $('#remove-pic-btn').onclick = async () => {
     if(!confirm("Are you sure you want to permanently delete your profile photo?")) return;
     
     const token = localStorage.getItem('jwtToken');
     try {
         const res = await fetch(`${API_BASE_URL}/profile/remove-pic`, {
-            method: 'DELETE', // Must match your backend route
+            method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (res.ok) {
             showMessage("Photo deleted from database", "success");
-            
-            // 1. Physically clear the image element to prevent ghosting
             const avatarImg = $('#nav-profile-pic');
             avatarImg.src = ""; 
             avatarImg.classList.add('hidden');
-            
-            // 2. Revert to the default user icon
+
             $('#nav-default-icon').classList.remove('hidden');
         } else {
             const data = await res.json();
@@ -1806,8 +1745,7 @@ $('#remove-pic-btn').onclick = async () => {
         showMessage("Connection error to backend", "error");
     }
 };
-// PASTE THE NEW CODE HERE:
-// Universal Navigation Switcher
+
 $$('.sidebar-link').forEach(link => {
     link.onclick = (e) => {
         const targetId = link.getAttribute('data-target');
@@ -1815,28 +1753,23 @@ $$('.sidebar-link').forEach(link => {
 
         if (!targetSection) return;
 
-        // 1. Reset all links and sections
         $$('.sidebar-link').forEach(l => l.classList.remove('active', 'bg-violet-600', 'text-white'));
         $$('.content-section').forEach(s => s.classList.add('hidden'));
 
-        // 2. Activate the clicked tab
         link.classList.add('active');
         targetSection.classList.remove('hidden');
 
-        // 3. Special data loading triggers
         if (targetId.startsWith('admin')) fetchAdminStats();
         if (targetId === 'home-dashboard') { loadDegreeJobChart(); loadDomainChart(); }
         if (targetId === 'prediction-history') fetchPredictionHistory();
-        
-        // --- ADD ONLY THIS LINE ---
+
         if (targetId === 'admin-feedback-view') loadFeedbackAnalytics();
     };
 });
-// --- ADMIN DATASET UPLOAD LOGIC ---
+
 const dropZone = $('#drop-zone');
 const datasetInput = $('#dataset-upload');
 
-// ================= SIDEBAR NAVIGATION (FIXED) =================
 $$('.sidebar-link').forEach(link => {
     link.onclick = (e) => {
         const targetId = link.getAttribute('data-target');
@@ -1844,7 +1777,7 @@ $$('.sidebar-link').forEach(link => {
 
         if (!targetSection) return;
 
-        // 1. Reset all links and sections
+
         $$('.sidebar-link').forEach(l =>
             l.classList.remove('active', 'bg-violet-600', 'text-white')
         );
@@ -1852,11 +1785,10 @@ $$('.sidebar-link').forEach(link => {
             s.classList.add('hidden')
         );
 
-        // 2. Activate clicked tab
+
         link.classList.add('active');
         targetSection.classList.remove('hidden');
 
-        // 3. Special data loading triggers (UNCHANGED LOGIC)
         if (targetId.startsWith('admin')) {
             fetchAdminStats();
             if (typeof google !== 'undefined' && google.charts) {
@@ -1877,18 +1809,15 @@ $$('.sidebar-link').forEach(link => {
 
         if (targetId === 'admin-feedback-view') {
             loadFeedbackAnalytics();
-            fetchFlaggedPredictions();    // Loads the red "Needs Review" list
+            fetchFlaggedPredictions();
             fetchFlaggedCount();
         }
     };
 });
 
-// ================= DATASET UPLOAD =================
 
-// Trigger file input when clicking the drop zone
 dropZone.onclick = () => datasetInput.click();
 
-// Drag and Drop Visual Effects
 dropZone.ondragover = (e) => {
     e.preventDefault();
     dropZone.classList.add('border-violet-500', 'bg-violet-50');
@@ -1905,7 +1834,7 @@ dropZone.ondrop = (e) => {
     handleDatasetUpload(file);
 };
 
-// Handle file selection via click
+
 datasetInput.onchange = (e) => {
     const file = e.target.files[0];
     handleDatasetUpload(file);
@@ -1917,7 +1846,7 @@ async function handleDatasetUpload(file) {
         return;
     }
 
-    // Show filename in UI
+
     $('#selected-filename').textContent = file.name;
     $('#file-selected-info').classList.remove('hidden');
     $('#drop-zone-text').classList.add('hidden');
@@ -1947,7 +1876,6 @@ async function handleDatasetUpload(file) {
     }
 }
 
-// Trigger Retraining Logic
 $('#retrain-btn').onclick = async () => {
     const btn = $('#retrain-btn');
     const token = localStorage.getItem('jwtToken');
@@ -1970,7 +1898,6 @@ $('#retrain-btn').onclick = async () => {
         if (res.ok) {
             showMessage("Model Retrained Successfully!", "success");
             
-            // Update the UI Card with results
             $('#training-metrics-card').classList.remove('hidden');
             $('#ui-accuracy-val').textContent = `Accuracy: ${data.accuracy || '90.0'}%`;
             $('#ui-last-trained').textContent = `Last Trained: ${new Date().toLocaleTimeString()}`;
@@ -1988,7 +1915,7 @@ $('#retrain-btn').onclick = async () => {
 
 let feedbackChart = null;
 
-// index.html - Update the loadFeedbackAnalytics function
+
 async function loadFeedbackAnalytics() {
     const token = localStorage.getItem('jwtToken');
     try {
@@ -1997,17 +1924,16 @@ async function loadFeedbackAnalytics() {
         });
         const data = await res.json();
 
-        // 1. Render the "Average Rating vs. Predicted Role" Chart
         const ctx = document.getElementById('feedbackChart').getContext('2d');
         if (feedbackChart) feedbackChart.destroy();
 
         feedbackChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: data.labels, // Predicted Roles
+                labels: data.labels,
                 datasets: [{
                     label: 'Avg Rating (1-5 Stars)',
-                    data: data.chartData, // Calculated Averages
+                    data: data.chartData, 
                     backgroundColor: 'rgba(124, 58, 237, 0.6)',
                     borderColor: '#7C3AED',
                     borderWidth: 2,
@@ -2021,7 +1947,6 @@ async function loadFeedbackAnalytics() {
             }
         });
 
-        // 2. Render the Detailed Feedback List (Names, Roles, Ratings, Comments)
         const feedbackList = $('#admin-feedback-list');
         if (!feedbackList) return;
         
@@ -2058,13 +1983,12 @@ async function loadFeedbackAnalytics() {
 }
 
 
-// Force Logout Logic
 const logoutBtn = $('#logout-btn');
 if (logoutBtn) {
     logoutBtn.onclick = () => {
-        localStorage.removeItem('jwtToken'); // Clear the session
+        localStorage.removeItem('jwtToken'); 
         localStorage.removeItem('userRole');
-        window.location.reload(); // Refresh to show login screen
+        window.location.reload(); 
     };
 }
 function drawSankey() {
@@ -2076,13 +2000,12 @@ function drawSankey() {
     [ 'B.Sc CS', 'Web Developer', 45 ],
     [ 'B.Sc CS', 'Data Analyst', 12 ],
     [ 'B.Tech IT', 'Software Engineer', 60 ],
-    // These values should come from your /stats/degree-job API
   ]);
 
   var chart = new google.visualization.Sankey(document.getElementById('sankey_chart'));
   chart.draw(data);
 }
-// Load the visualization API and the sankey package
+
 google.charts.load('current', {'packages':['sankey']});
 
 async function drawSankeyChart() {
@@ -2101,7 +2024,6 @@ async function drawSankeyChart() {
         data.addColumn('number', 'Weight');
         data.addRows(rows);
 
-        // Sets chart options.
         var options = {
             width: '100%',
             sankey: {
@@ -2113,7 +2035,6 @@ async function drawSankeyChart() {
             }
         };
 
-        // Instantiates and draws our chart, passing in some options.
         var chart = new google.visualization.Sankey(document.getElementById('sankey_chart'));
         chart.draw(data, options);
     } catch (err) {
@@ -2121,11 +2042,10 @@ async function drawSankeyChart() {
     }
 }
 
-// Update your Sidebar Navigation to trigger this
-// Inside your $$('.sidebar-link').forEach(link => { ... })
+
 if (targetId === 'admin-stats') {
     fetchAdminStats();
-    google.charts.setOnLoadCallback(drawSankeyChart); // Trigger the Sankey
+    google.charts.setOnLoadCallback(drawSankeyChart); 
 }
 
 async function drawUserSankey() {
@@ -2166,6 +2086,5 @@ async function drawUserSankey() {
     }
 }
 </script>
-
 </body>
 </html>

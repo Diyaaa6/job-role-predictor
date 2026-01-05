@@ -8,11 +8,10 @@ const { OAuth2Client } = require('google-auth-library');
 const Joi = require('joi');
 const mongoose = require('mongoose');
 const { spawn } = require('child_process');
-const multer = require('multer'); // 🔥 Add this line at the top
+const multer = require('multer'); 
 const router = express.Router();
 const fs = require('fs');
 
-// 🔥 Define and create the necessary upload directories
 const uploadPaths = [
     path.join(__dirname, 'uploads'),
     path.join(__dirname, 'uploads', 'profiles'),
@@ -29,32 +28,30 @@ const datasetDir = path.join(__dirname, 'uploads', 'datasets');
 if (!fs.existsSync(datasetDir)) {
     fs.mkdirSync(datasetDir, { recursive: true });
 }
-/* ================= INTERNAL IMPORTS ================= */
+
 const connectDB = require('./db');
 const User = require('./User');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-/* ================= CONFIG ================= */
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret';
 const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-/* ================= DATABASE ================= */
+
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/jobrole';
 connectDB(MONGO_URI);
 
-/* ================= MIDDLEWARE ================= */
-/* ================= MIDDLEWARE ================= */
+
 app.use(cors({
-  origin: '*', // Allows all origins during development
+  origin: '*', 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Log every incoming request to see if it even reaches the server
+
 app.use((req, res, next) => {
   console.log(`>>> ${req.method} request to ${req.url}`);
   next();
@@ -63,7 +60,6 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ================= AUTH MIDDLEWARE ================= */
 function authenticateToken(req, res, next) {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
@@ -75,13 +71,11 @@ function authenticateToken(req, res, next) {
       console.log("JWT verification failed:", err.message);
       return res.status(403).json({ message: 'Invalid or expired token' });
     }
-    req.userId = decoded.id; // Store user ID for routes
+    req.userId = decoded.id;
     next();
   });
 }
 
-/* ================= AUTH ROUTES ================= */
-// REGISTER
 app.post('/auth/register', async (req, res) => {
   try {
     const { email, password, username } = req.body;
@@ -101,7 +95,6 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
-// LOGIN
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -122,7 +115,7 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-// GOOGLE AUTH
+
 app.post('/auth/google', async (req, res) => {
   try {
     const { token } = req.body;
@@ -152,7 +145,7 @@ app.post('/auth/google', async (req, res) => {
   }
 });
 
-/* ================= PROFILE ================= */
+
 app.get('/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-passwordHash');
@@ -164,16 +157,16 @@ app.get('/profile', authenticateToken, async (req, res) => {
         username: user.username,
         email: user.email,
         role: user.role || 'user',
-        profilePic: user.profilePic || "", // Needed for persistence
+        profilePic: user.profilePic || "", 
         education: user.education || {},
-        educationHistory: user.educationHistory || [] // MUST include this
+        educationHistory: user.educationHistory || [] 
       }
     });
   } catch (err) {
     res.status(500).json({ message: 'Unable to fetch profile' });
   }
 });
-// Set up storage for profile pictures
+
 const picStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/profiles/'),
   filename: (req, file, cb) => {
@@ -182,7 +175,7 @@ const picStorage = multer.diskStorage({
 });
 const uploadPic = multer({ storage: picStorage });
 
-// Route to handle the local file upload
+
 app.post('/profile/upload-pic', authenticateToken, uploadPic.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
@@ -196,14 +189,13 @@ app.post('/profile/upload-pic', authenticateToken, uploadPic.single('avatar'), a
   }
 });
 
-// Serve the uploads folder as static so the browser can see the images
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Example Backend Route (In your server-side routes/controllers)
-// NEW: Proper Profile Pic Removal Route
+
 app.delete('/profile/remove-pic', authenticateToken, async (req, res) => {
     try {
-        // Find user by ID and clear the field in the database
+
         await User.findByIdAndUpdate(req.userId, { 
             $set: { profilePic: "" } 
         });
@@ -216,7 +208,7 @@ app.delete('/profile/remove-pic', authenticateToken, async (req, res) => {
 });
 
 
-// ... existing code ...
+
 const authenticateAdmin = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -241,17 +233,13 @@ const authenticateAdmin = async (req, res, next) => {
 };
 
 
-/* ================= ADMIN ROUTES ================= */
 
-// Move the upload config here
 const datasetUpload = multer({ dest: 'uploads/datasets/' });
 const upload = multer({ dest: 'uploads/datasets/' });
 
 router.post('/admin/upload-dataset', authenticateAdmin, upload.single('dataset'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-
-        // logic to move file or trigger CSV parsing here
         console.log("Received dataset:", req.file.path);
 
         res.status(200).json({ 
@@ -264,7 +252,6 @@ router.post('/admin/upload-dataset', authenticateAdmin, upload.single('dataset')
 });
 
 
-/* ================= EDUCATION SCHEMA ================= */
 const educationSchema = Joi.object({
   degree: Joi.string().required(),
   specialization: Joi.string().required(),
@@ -274,10 +261,10 @@ const educationSchema = Joi.object({
   certifications: Joi.alternatives().try(Joi.array().items(Joi.string()), Joi.string().allow('')).optional(),
   projects: Joi.number().default(0),
   internship: Joi.string().valid('Yes', 'No').required(),
-  skills: Joi.array().items(Joi.string()).optional(), // Ensure this line exists
+  skills: Joi.array().items(Joi.string()).optional(), 
 });
 
-/* ================= EDUCATION ADD - UPDATED ================= */
+
 app.post('/education/add', authenticateToken, async (req, res) => {
     console.log("1. Received education/add request");
     try {
@@ -305,20 +292,17 @@ app.post('/education/add', authenticateToken, async (req, res) => {
                 const prediction = JSON.parse(cleanOutput);
                 const user = await User.findById(req.userId);
                 
-                // Construct entry
                 const newEntry = {
                     ...value,
                     predictedJobRole: prediction.predicted_job_role || "Pending",
                     matchPercentage: prediction.match_percentage || 0,
                     topMatches: prediction.top_3_matches || [],
-                    isFlagged: false, // Milestone 4: Initialize feedback state [cite: 257]
+                    isFlagged: false, 
                     createdAt: new Date()
                 };
 
-                // FIX: Push to history first to generate the ID
                 user.educationHistory.push(newEntry);
                 
-                // FIX: Assign the newly created sub-document (with its ID) to the main education field
                 const savedEntry = user.educationHistory[user.educationHistory.length - 1];
                 user.education = savedEntry; 
                 
@@ -333,7 +317,7 @@ app.post('/education/add', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-/* ================= EDUCATION HISTORY ================= */
+
 app.get('/education/history', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('educationHistory');
@@ -400,9 +384,7 @@ app.get('/stats/job-domains', authenticateToken, async (req, res) => {
   }
 });
 
-// Add this to index.js
-// index.js - Update the /education/insights route
-// index.js - Update the insights route for Milestone 4
+
 app.get('/education/insights', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -410,7 +392,6 @@ app.get('/education/insights', authenticateToken, async (req, res) => {
 
     const { degree, predictedJobRole, cgpa, projects } = user.education;
 
-    // Filter peers matched with the same job role
     const peersWithSameRole = await User.find({ 
       "education.predictedJobRole": predictedJobRole 
     });
@@ -419,7 +400,6 @@ app.get('/education/insights', authenticateToken, async (req, res) => {
       return res.json({ insightText: "Not enough data for peer comparison.", peerCount: 0 });
     }
 
-    // Calculate Dataset Trends: Averages for CGPA and Projects
     const avgCGPA = peersWithSameRole.reduce((acc, p) => acc + (p.education.cgpa || 0), 0) / peersWithSameRole.length;
     const avgProjects = peersWithSameRole.reduce((acc, p) => acc + (p.education.projects || 0), 0) / peersWithSameRole.length;
 
@@ -439,14 +419,10 @@ app.get('/education/insights', authenticateToken, async (req, res) => {
 });
 
 
-/* ================= ADMIN ROUTES ================= */
-
-// Get Admin Stats
-// index.js - Update the /admin/stats route
 app.get('/admin/stats', authenticateAdmin, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments({ role: 'user' });
-    // Explicitly select educationHistory to include all nested fields
+
     const allUsers = await User.find({ role: 'user' }).select('username email educationHistory');
     
     const historyData = allUsers.flatMap(u => u.educationHistory);
@@ -454,7 +430,7 @@ app.get('/admin/stats', authenticateAdmin, async (req, res) => {
     res.json({
       totalUsers,
       totalPredictions: historyData.length,
-      users: allUsers // This now includes the isFlagged status for each prediction
+      users: allUsers
     });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch admin stats" });
@@ -485,7 +461,7 @@ app.post('/admin/retrain', authenticateToken, authenticateAdmin, async (req, res
   try {
     const datasetDir = path.join(__dirname, 'uploads', 'datasets');
     const archiveDir = path.join(__dirname, 'models_archive');
-    const MODEL_DIR = path.join(__dirname, 'model'); // ACTIVE MODEL
+    const MODEL_DIR = path.join(__dirname, 'model');
 
     if (!fs.existsSync(archiveDir)) {
       fs.mkdirSync(archiveDir, { recursive: true });
@@ -500,7 +476,7 @@ app.post('/admin/retrain', authenticateToken, authenticateAdmin, async (req, res
       .map(f => ({ name: f, time: fs.statSync(path.join(datasetDir, f)).mtime.getTime() }))
       .sort((a, b) => b.time - a.time)[0].name;
 
-    /* ================== 🔴 ARCHIVE CURRENT MODEL FIRST ================== */
+
     let archivedPath = null;
     if (fs.existsSync(MODEL_DIR)) {
       const timestamp = Date.now();
@@ -509,7 +485,6 @@ app.post('/admin/retrain', authenticateToken, authenticateAdmin, async (req, res
       fs.rmSync(MODEL_DIR, { recursive: true, force: true });
     }
 
-    /* ================== TRAIN NEW MODEL ================== */
     const pythonPath = 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python314\\python.exe';
     const scriptPath = path.join(__dirname, 'scripts', 'admin_train.py');
 
@@ -526,11 +501,11 @@ app.post('/admin/retrain', authenticateToken, authenticateAdmin, async (req, res
       const match = output.match(/Accuracy:\s*(\d+(\.\d+)?)/);
       const accuracy = match ? parseFloat(match[1]) : 0;
 
-      /* ================== DB ENTRY ================== */
+
       const historyEntry = await Retraining.create({
         fileName: latestFile,
         accuracy,
-        modelPath: archivedPath,   // 🔑 OLD MODEL PATH
+        modelPath: archivedPath,  
         isActive: true
       });
 
@@ -559,9 +534,8 @@ app.post('/admin/restore-model', authenticateToken, authenticateAdmin, async (re
         if (!target) return res.status(404).json({ message: "Version not found in database" });
 
         const activeModelFolder = path.join(__dirname, 'model'); 
-        // Check if the archived folder exists on disk
+
         if (fs.existsSync(target.modelPath)) {
-            // Remove current active folder and replace it with the archived version
             if (fs.existsSync(activeModelFolder)) {
                 fs.rmSync(activeModelFolder, { recursive: true, force: true });
             }
@@ -580,7 +554,6 @@ app.post('/admin/restore-model', authenticateToken, authenticateAdmin, async (re
     }
 });
 
-//* ================= RETRAINING SCHEMA ================= */
 const retrainingSchema = new mongoose.Schema({
     fileName: String,
     accuracy: Number,
@@ -589,9 +562,8 @@ const retrainingSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: false }
 });
 
-// Check if model exists before compiling
 const Retraining = mongoose.models.Retraining || mongoose.model('Retraining', retrainingSchema);
-// Fetch all trained models for the library table
+
 app.get('/admin/retrain-history', authenticateToken, authenticateAdmin, async (req, res) => {
     try {
         const history = await Retraining.find().sort({ trainedAt: -1 });
@@ -600,8 +572,7 @@ app.get('/admin/retrain-history', authenticateToken, authenticateAdmin, async (r
         res.status(500).json({ message: "Failed to fetch model library" });
     }
 });
-// Admin: Aggregate Feedback Stats
-// index.js - Update/Verify this section in your admin/feedback-analytics route
+
 app.get('/admin/feedback-analytics', authenticateToken, authenticateAdmin, async (req, res) => {
     try {
         const users = await User.find({}, 'username educationHistory');
@@ -610,18 +581,15 @@ app.get('/admin/feedback-analytics', authenticateToken, authenticateAdmin, async
 
         users.forEach(user => {
             user.educationHistory.forEach(pred => {
-                // Check if there is any feedback to display
                 if (pred.userRating || pred.userComment) {
                     const role = pred.predictedJobRole || "Unknown";
-                    
-                    // Chart Data logic...
+
                     if (pred.userRating) {
                         if (!roleStats[role]) roleStats[role] = { totalRating: 0, count: 0 };
                         roleStats[role].totalRating += pred.userRating;
                         roleStats[role].count += 1;
                     }
 
-                    // Detailed Data for the List
                     detailedFeedback.push({
                         username: user.username,
                         predictedRole: role,
@@ -637,19 +605,17 @@ app.get('/admin/feedback-analytics', authenticateToken, authenticateAdmin, async
         const chartData = labels.map(role => (roleStats[role].totalRating / roleStats[role].count).toFixed(1));
         detailedFeedback.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        res.json({ labels, chartData, detailedFeedback }); // Sending detailed list
+        res.json({ labels, chartData, detailedFeedback });
     } catch (err) {
         res.status(500).json({ message: "Error fetching feedback analytics" });
     }
 });
-// Mock Dataset Upload (Metadata storage)
-// Add/Update this in index.js
+
 const datasetStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/datasets/');
     },
     filename: (req, file, cb) => {
-        // This keeps the original name or at least ensures it ends with .csv
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, file.fieldname + '-' + uniqueSuffix + '.csv');
     }
@@ -676,21 +642,17 @@ app.post('/admin/upload-dataset', authenticateAdmin, uploadDataset.single('datas
     }
 });
 
-// Add this route to index.js
-// Replace the route in index.js
-// Add this route to index.js
+
 app.post('/education/flag', authenticateToken, async (req, res) => {
     try {
         const { predictionId } = req.body;
         const user = await User.findById(req.userId);
 
-        // Find the specific prediction in history and flag it
         const prediction = user.educationHistory.id(predictionId);
         if (!prediction) return res.status(404).json({ message: "Prediction not found" });
 
         prediction.isFlagged = true;
-        
-        // Also update the main 'education' field if it's the current one
+
         if (user.education && user.education._id.toString() === predictionId) {
             user.education.isFlagged = true;
         }
@@ -701,25 +663,20 @@ app.post('/education/flag', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Server error while flagging" });
     }
 });
-// 1. You would usually require a Feedback model here
-// Add this to index.js
+
 app.post('/feedback/submit', authenticateToken, async (req, res) => {
   try {
     const { predictionId, rating, comment } = req.body;
-    
-    // 1. Find the user
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // 2. Find the specific prediction in the history array
     const prediction = user.educationHistory.id(predictionId);
     
     if (prediction) {
-      // 3. Save the star rating and text feedback
+
       prediction.userRating = Number(rating);
       prediction.userComment = comment;
 
-      // Also sync the main education object if it matches this prediction
       if (user.education && user.education._id.toString() === predictionId) {
         user.education.userRating = Number(rating);
         user.education.userComment = comment;
@@ -736,7 +693,6 @@ app.post('/feedback/submit', authenticateToken, async (req, res) => {
   }
 });
 
-// index.js - Sankey Data Aggregator
 app.get('/stats/sankey-data', authenticateToken, async (req, res) => {
   try {
     const users = await User.find({}, 'educationHistory');
@@ -751,7 +707,6 @@ app.get('/stats/sankey-data', authenticateToken, async (req, res) => {
       });
     });
 
-    // Format for Google Charts: [['Degree', 'Role', Weight]]
     const chartData = Object.keys(flows).map(key => {
       const [from, to] = key.split(' → ');
       return [from, to, flows[key]];
@@ -763,7 +718,6 @@ app.get('/stats/sankey-data', authenticateToken, async (req, res) => {
   }
 });
 
-// index.js - Personalized Sankey for the User
 app.get('/stats/my-career-flows', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -772,7 +726,6 @@ app.get('/stats/my-career-flows', authenticateToken, async (req, res) => {
     }
 
     const userDegree = user.education.degree;
-    // Find all users who share this degree
     const peers = await User.find({ "education.degree": userDegree }, 'educationHistory');
     
     const flows = {};
@@ -785,7 +738,6 @@ app.get('/stats/my-career-flows', authenticateToken, async (req, res) => {
       });
     });
 
-    // Format for Google Charts: [['User Degree', 'Possible Role', Weight]]
     const chartData = Object.keys(flows).map(role => [userDegree, role, flows[role]]);
 
     res.json(chartData);
@@ -794,10 +746,10 @@ app.get('/stats/my-career-flows', authenticateToken, async (req, res) => {
   }
 });
 
-/* ================= FRONTEND ================= */
+
 const FRONTEND_PATH = path.join(__dirname, '..', 'frontend');
 app.use(express.static(FRONTEND_PATH));
-// Add this to index.js to force errors to show in the terminal
+
 app.use((err, req, res, next) => {
   console.error("GLOBAL ERROR:", err.stack);
   res.status(500).json({ message: "Internal Server Error", error: err.message });

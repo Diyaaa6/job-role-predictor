@@ -9,17 +9,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 def train_model(csv_path):
-    # 1. SETUP PATHS
-    # Find the base backend directory
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     model_dir = os.path.join(base_dir, 'model')
-    
-    # Create 'model' folder if it doesn't exist
+
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
     try:
-        # 2. LOAD DATA
         if not os.path.exists(csv_path):
             print(f"Error: CSV file not found at {csv_path}")
             sys.exit(1)
@@ -27,10 +23,8 @@ def train_model(csv_path):
         df = pd.read_csv(csv_path)
         print(f"Dataset loaded: {os.path.basename(csv_path)}")
 
-        # Clean column names
         df.columns = df.columns.str.strip().str.lower()
 
-        # 3. PREPROCESSING
         df['skills'] = df['skills'].apply(lambda x: [s.strip() for s in x.split(',')] if isinstance(x, str) else [])
         df['internship'] = df['internship'].map({"Yes": 1, "No": 0})
 
@@ -48,7 +42,6 @@ def train_model(csv_path):
 
         df_final = pd.concat([df.drop(columns=['skills']), skill_df], axis=1)
 
-        # 4. TRAIN / TEST SPLIT
         X = df_final.drop('job_role', axis=1)
         y = df_final['job_role']
 
@@ -56,18 +49,15 @@ def train_model(csv_path):
             X, y, test_size=0.2, stratify=y, random_state=42
         )
 
-        # 5. MODEL TRAINING
         model = RandomForestClassifier(
             n_estimators=140, max_depth=12, min_samples_split=8,
             min_samples_leaf=4, random_state=42, n_jobs=-1
         )
         model.fit(X_train, y_train)
 
-        # 6. EVALUATION
         accuracy = accuracy_score(y_test, model.predict(X_test))
         print(f"Training Complete. Accuracy: {round(accuracy * 100, 2)}%")
 
-        # 7. SAVE TO BACKEND/MODEL FOLDER
         joblib.dump(model, os.path.join(model_dir, "random_forest_model.pkl"))
         joblib.dump(job_enc, os.path.join(model_dir, "jobrole_label_encoder.pkl"))
         joblib.dump(deg_enc, os.path.join(model_dir, "degree_encoder.pkl"))
@@ -81,7 +71,7 @@ def train_model(csv_path):
         sys.exit(1)
 
 if __name__ == "__main__":
-    # Check if a specific CSV path was passed from Node.js
+
     if len(sys.argv) > 1:
         target_csv = sys.argv[1]
         train_model(target_csv)

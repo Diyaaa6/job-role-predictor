@@ -4,14 +4,13 @@ import numpy as np
 import sys
 import json
 
-# Load model & encoders
 model = joblib.load("random_forest_model.pkl")
 degree_enc = joblib.load("degree_encoder.pkl")
 spec_enc = joblib.load("specialization_encoder.pkl")
 skills_mlb = joblib.load("skills_binarizer.pkl")
 job_enc = joblib.load("jobrole_label_encoder.pkl")
 
-# Function to predict
+
 def predict_job_role(inp):
     degree = inp["degree"]
     specialization = inp["specialization"]
@@ -54,8 +53,8 @@ def predict_job_role(inp):
         "top_3_matches": top_matches
     }
 
-# Read input from Node.js
+
 if __name__ == "__main__":
     inp_json = json.loads(sys.argv[1])
     result = predict_job_role(inp_json)
-    print(json.dumps(result))  # Node.js will read this as JSON
+    print(json.dumps(result)) 

@@ -1,4 +1,4 @@
-// User.js
+
 const mongoose = require('mongoose');
 
 const predictionSchema = new mongoose.Schema({
@@ -8,7 +8,6 @@ const predictionSchema = new mongoose.Schema({
   cgpaOutOf: String,
   yearOfGraduation: Number,
   employmentType: String,
-  // FIX: Change String to [String] to accept arrays
   certifications: { type: [String], default: [] }, 
   internship: String,
   projects: Number,
@@ -18,7 +17,6 @@ const predictionSchema = new mongoose.Schema({
   matchPercentage: Number,
   topMatches: Array,
 
-  // Milestone 4 Feedback Fields
   isFlagged: { type: Boolean, default: false },
   userRating: { type: Number, default: 0 },
   userComment: { type: String, default: "" },
@@ -42,7 +40,7 @@ const RetrainingSchema = new mongoose.Schema({
     fileName: String,
     accuracy: Number,
     trainedAt: { type: Date, default: Date.now },
-    modelPath: String, // Path to the .pkl file
+    modelPath: String, 
     isActive: { type: Boolean, default: false }
 });
 const Retraining = mongoose.model('Retraining', RetrainingSchema);

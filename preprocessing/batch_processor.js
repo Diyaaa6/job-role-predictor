@@ -34,8 +34,7 @@ function processFile(datasetConfig) {
 
     console.log(`\n--- PROCESSING: ${datasetConfig.name} ---`);
     console.log(`[Processor] Reading data from: ${INPUT_FILE}`);
-    
-    // Write the header row
+
     writer.write('Source_Dataset,Original_Degree,Original_CGPA,ML_Degree_Code,ML_Spec_Code,ML_CGPA_Norm,ML_YoG,ML_Cert_Count\n');
 
     return new Promise((resolve, reject) => {
@@ -46,21 +45,17 @@ function processFile(datasetConfig) {
                 let degreeField, specField, cgpaField, yearField;
 
                 if (datasetConfig.name.includes('Academic')) {
-                    // MAPPING 1: Academic Performance V2 (Verified Working)
                     degreeField = row['Prog Code'] || '';
                     specField = row['Prog Code'] || '';
                     cgpaField = row['CGPA'] || '0'; 
                     yearField = row['YoG'] || '2000';
                 } else if (datasetConfig.name.includes('Placement')) {
-                    // MAPPING 2: Student Placement Data (FINAL FIX)
-                    
-                    // Degree/Specialization are the same 'Department' field in this dataset
+
                     degreeField = row['Department'] || ''; 
                     specField = row['Department'] || ''; 
-                    
-                    // CGPA and Year are exact matches to the headers
+
                     cgpaField = row['CGPA'] || '0'; 
-                    yearField = row['GraduationYear'] || '2000'; // Correct Header
+                    yearField = row['GraduationYear'] || '2000'; 
                 } else {
                     return; 
                 }
@@ -74,10 +69,8 @@ function processFile(datasetConfig) {
                     certifications: row['Certifications'] || '' 
                 };
 
-                // --- PREPROCESSING ---
                 const processedVector = preprocessEducationData(mappedData);
 
-                // --- WRITE OUTPUT ---
                 writer.write(
                     `${datasetConfig.name},${mappedData.degree},${mappedData.cgpa},` + 
                     `${processedVector[0]},${processedVector[1]},${processedVector[2]},${processedVector[3]},${processedVector[4]}\n`
@@ -98,7 +91,6 @@ function processFile(datasetConfig) {
     });
 }
 
-// Execute processing for all datasets
 async function runBatchProcessor() {
     console.log('\nSTARTING MILESTONE 2 BATCH PROCESS DEMO');
     try {
