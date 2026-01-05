@@ -1,0 +1,201 @@
+Source_Dataset,Original_Degree,Original_CGPA,ML_Degree_Code,ML_Spec_Code,ML_CGPA_Norm,ML_YoG,ML_Cert_Count
+Student Placement Data,Mathematics,3.16,0,0,0.32,2026,0
+Student Placement Data,Chemistry,3.75,0,0,0.38,2027,0
+Student Placement Data,Physics,2.95,0,0,0.3,2027,0
+Student Placement Data,Physics,3.55,0,0,0.35,2029,0
+Student Placement Data,Chemistry,2.29,0,0,0.23,2025,0
+Student Placement Data,Mathematics,3.3,0,0,0.33,2029,0
+Student Placement Data,Chemistry,2.44,0,0,0.24,2029,0
+Student Placement Data,Mathematics,3.44,0,0,0.34,2025,0
+Student Placement Data,Computer Science,3.27,0,0,0.33,2027,0
+Student Placement Data,Physics,3.09,0,0,0.31,2030,0
+Student Placement Data,Physics,3.42,0,0,0.34,2026,0
+Student Placement Data,Chemistry,2.33,0,0,0.23,2027,0
+Student Placement Data,Mathematics,3.76,0,0,0.38,2025,0
+Student Placement Data,Computer Science,2.02,0,0,0.2,2025,0
+Student Placement Data,Computer Science,3.35,0,0,0.34,2030,0
+Student Placement Data,Physics,3.21,0,0,0.32,2029,0
+Student Placement Data,Computer Science,3.92,0,0,0.39,2027,0
+Student Placement Data,Chemistry,3.42,0,0,0.34,2024,0
+Student Placement Data,Computer Science,3.43,0,0,0.34,2027,0
+Student Placement Data,Physics,2.05,0,0,0.2,2025,0
+Student Placement Data,Computer Science,2.33,0,0,0.23,2025,0
+Student Placement Data,Physics,3.68,0,0,0.37,2028,0
+Student Placement Data,Mathematics,3.84,0,0,0.38,2028,0
+Student Placement Data,Chemistry,3.82,0,0,0.38,2027,0
+Student Placement Data,Computer Science,2.99,0,0,0.3,2026,0
+Student Placement Data,Biology,2.49,0,0,0.25,2024,0
+Student Placement Data,Mathematics,3.16,0,0,0.32,2024,0
+Student Placement Data,Physics,3.56,0,0,0.36,2026,0
+Student Placement Data,Physics,3.58,0,0,0.36,2030,0
+Student Placement Data,Chemistry,2.82,0,0,0.28,2024,0
+Student Placement Data,Physics,2.98,0,0,0.3,2029,0
+Student Placement Data,Chemistry,3.21,0,0,0.32,2030,0
+Student Placement Data,Chemistry,2.15,0,0,0.21,2030,0
+Student Placement Data,Computer Science,2.73,0,0,0.27,2030,0
+Student Placement Data,Physics,2.92,0,0,0.29,2024,0
+Student Placement Data,Mathematics,3.51,0,0,0.35,2024,0
+Student Placement Data,Biology,2.75,0,0,0.28,2028,0
+Student Placement Data,Chemistry,3.26,0,0,0.33,2028,0
+Student Placement Data,Chemistry,3.74,0,0,0.37,2024,0
+Student Placement Data,Biology,3.26,0,0,0.33,2028,0
+Student Placement Data,Physics,2.37,0,0,0.24,2024,0
+Student Placement Data,Mathematics,2.67,0,0,0.27,2027,0
+Student Placement Data,Mathematics,2.02,0,0,0.2,2028,0
+Student Placement Data,Chemistry,2.7,0,0,0.27,2028,0
+Student Placement Data,Computer Science,3.5,0,0,0.35,2030,0
+Student Placement Data,Chemistry,3.6,0,0,0.36,2027,0
+Student Placement Data,Biology,3.47,0,0,0.35,2029,0
+Student Placement Data,Computer Science,3.05,0,0,0.3,2030,0
+Student Placement Data,Physics,3.06,0,0,0.31,2025,0
+Student Placement Data,Chemistry,3.94,0,0,0.39,2030,0
+Student Placement Data,Mathematics,2.13,0,0,0.21,2030,0
+Student Placement Data,Chemistry,3.64,0,0,0.36,2025,0
+Student Placement Data,Physics,3.56,0,0,0.36,2027,0
+Student Placement Data,Chemistry,3.16,0,0,0.32,2029,0
+Student Placement Data,Chemistry,3.56,0,0,0.36,2030,0
+Student Placement Data,Physics,2.81,0,0,0.28,2025,0
+Student Placement Data,Chemistry,2.94,0,0,0.29,2024,0
+Student Placement Data,Computer Science,3.8,0,0,0.38,2027,0
+Student Placement Data,Mathematics,2.62,0,0,0.26,2030,0
+Student Placement Data,Biology,2.1,0,0,0.21,2024,0
+Student Placement Data,Biology,2.39,0,0,0.24,2027,0
+Student Placement Data,Mathematics,3.29,0,0,0.33,2028,0
+Student Placement Data,Physics,3.51,0,0,0.35,2027,0
+Student Placement Data,Chemistry,2.79,0,0,0.28,2027,0
+Student Placement Data,Computer Science,2.47,0,0,0.25,2025,0
+Student Placement Data,Computer Science,3.88,0,0,0.39,2025,0
+Student Placement Data,Computer Science,2.75,0,0,0.28,2029,0
+Student Placement Data,Computer Science,2.18,0,0,0.22,2030,0
+Student Placement Data,Mathematics,3.18,0,0,0.32,2027,0
+Student Placement Data,Chemistry,2.33,0,0,0.23,2029,0
+Student Placement Data,Chemistry,3.46,0,0,0.35,2027,0
+Student Placement Data,Physics,3.92,0,0,0.39,2030,0
+Student Placement Data,Physics,3.92,0,0,0.39,2028,0
+Student Placement Data,Mathematics,2.87,0,0,0.29,2025,0
+Student Placement Data,Chemistry,3.68,0,0,0.37,2026,0
+Student Placement Data,Computer Science,2.53,0,0,0.25,2028,0
+Student Placement Data,Computer Science,3.23,0,0,0.32,2027,0
+Student Placement Data,Biology,2.6,0,0,0.26,2026,0
+Student Placement Data,Computer Science,3.84,0,0,0.38,2029,0
+Student Placement Data,Chemistry,3.35,0,0,0.34,2030,0
+Student Placement Data,Computer Science,2.83,0,0,0.28,2027,0
+Student Placement Data,Biology,2.74,0,0,0.27,2028,0
+Student Placement Data,Mathematics,3.5,0,0,0.35,2026,0
+Student Placement Data,Mathematics,3.67,0,0,0.37,2027,0
+Student Placement Data,Physics,3.28,0,0,0.33,2027,0
+Student Placement Data,Computer Science,3.97,0,0,0.4,2024,0
+Student Placement Data,Biology,3.07,0,0,0.31,2027,0
+Student Placement Data,Computer Science,2.14,0,0,0.21,2028,0
+Student Placement Data,Physics,3.52,0,0,0.35,2026,0
+Student Placement Data,Physics,3.16,0,0,0.32,2024,0
+Student Placement Data,Mathematics,2.84,0,0,0.28,2028,0
+Student Placement Data,Biology,3.86,0,0,0.39,2025,0
+Student Placement Data,Chemistry,2.3,0,0,0.23,2028,0
+Student Placement Data,Physics,2.7,0,0,0.27,2030,0
+Student Placement Data,Mathematics,3.77,0,0,0.38,2030,0
+Student Placement Data,Chemistry,3.39,0,0,0.34,2024,0
+Student Placement Data,Chemistry,3.2,0,0,0.32,2024,0
+Student Placement Data,Biology,3.95,0,0,0.4,2024,0
+Student Placement Data,Physics,2.11,0,0,0.21,2027,0
+Student Placement Data,Biology,2.76,0,0,0.28,2024,0
+Student Placement Data,Mathematics,3,0,0,0.3,2030,0
+Student Placement Data,Chemistry,2.85,0,0,0.29,2024,0
+Student Placement Data,Physics,3.97,0,0,0.4,2030,0
+Student Placement Data,Computer Science,3.52,0,0,0.35,2028,0
+Student Placement Data,Physics,3.37,0,0,0.34,2030,0
+Student Placement Data,Computer Science,3.41,0,0,0.34,2025,0
+Student Placement Data,Biology,2.86,0,0,0.29,2030,0
+Student Placement Data,Physics,3.86,0,0,0.39,2030,0
+Student Placement Data,Computer Science,2.99,0,0,0.3,2029,0
+Student Placement Data,Computer Science,3.23,0,0,0.32,2027,0
+Student Placement Data,Biology,2.51,0,0,0.25,2030,0
+Student Placement Data,Computer Science,2.38,0,0,0.24,2025,0
+Student Placement Data,Chemistry,3.25,0,0,0.33,2027,0
+Student Placement Data,Chemistry,2.14,0,0,0.21,2025,0
+Student Placement Data,Biology,3.75,0,0,0.38,2025,0
+Student Placement Data,Physics,2.2,0,0,0.22,2027,0
+Student Placement Data,Biology,2.77,0,0,0.28,2030,0
+Student Placement Data,Biology,2.99,0,0,0.3,2027,0
+Student Placement Data,Computer Science,2.48,0,0,0.25,2025,0
+Student Placement Data,Computer Science,3.63,0,0,0.36,2027,0
+Student Placement Data,Chemistry,3.03,0,0,0.3,2030,0
+Student Placement Data,Physics,3.65,0,0,0.36,2025,0
+Student Placement Data,Physics,3.32,0,0,0.33,2030,0
+Student Placement Data,Biology,3.37,0,0,0.34,2027,0
+Student Placement Data,Computer Science,2.41,0,0,0.24,2026,0
+Student Placement Data,Computer Science,3.8,0,0,0.38,2027,0
+Student Placement Data,Chemistry,2.9,0,0,0.29,2025,0
+Student Placement Data,Physics,3.44,0,0,0.34,2025,0
+Student Placement Data,Physics,2.51,0,0,0.25,2029,0
+Student Placement Data,Physics,2.02,0,0,0.2,2028,0
+Student Placement Data,Physics,3.37,0,0,0.34,2029,0
+Student Placement Data,Physics,3.72,0,0,0.37,2026,0
+Student Placement Data,Computer Science,2.04,0,0,0.2,2024,0
+Student Placement Data,Chemistry,2.08,0,0,0.21,2026,0
+Student Placement Data,Computer Science,2.5,0,0,0.25,2027,0
+Student Placement Data,Physics,2.9,0,0,0.29,2030,0
+Student Placement Data,Chemistry,3.18,0,0,0.32,2024,0
+Student Placement Data,Computer Science,3.77,0,0,0.38,2024,0
+Student Placement Data,Mathematics,2.02,0,0,0.2,2026,0
+Student Placement Data,Mathematics,3.26,0,0,0.33,2027,0
+Student Placement Data,Mathematics,2.3,0,0,0.23,2024,0
+Student Placement Data,Physics,3.86,0,0,0.39,2028,0
+Student Placement Data,Chemistry,3.98,0,0,0.4,2030,0
+Student Placement Data,Chemistry,3.07,0,0,0.31,2030,0
+Student Placement Data,Chemistry,2.14,0,0,0.21,2024,0
+Student Placement Data,Biology,3.85,0,0,0.39,2030,0
+Student Placement Data,Computer Science,3.19,0,0,0.32,2028,0
+Student Placement Data,Chemistry,2.03,0,0,0.2,2026,0
+Student Placement Data,Physics,3.64,0,0,0.36,2029,0
+Student Placement Data,Biology,2.55,0,0,0.26,2029,0
+Student Placement Data,Physics,2.71,0,0,0.27,2025,0
+Student Placement Data,Computer Science,2.51,0,0,0.25,2028,0
+Student Placement Data,Mathematics,3.99,0,0,0.4,2029,0
+Student Placement Data,Physics,3.47,0,0,0.35,2024,0
+Student Placement Data,Physics,3.78,0,0,0.38,2025,0
+Student Placement Data,Computer Science,3.71,0,0,0.37,2030,0
+Student Placement Data,Chemistry,2.59,0,0,0.26,2027,0
+Student Placement Data,Chemistry,2.62,0,0,0.26,2029,0
+Student Placement Data,Computer Science,3,0,0,0.3,2025,0
+Student Placement Data,Physics,2.78,0,0,0.28,2029,0
+Student Placement Data,Biology,2.45,0,0,0.25,2026,0
+Student Placement Data,Computer Science,2.58,0,0,0.26,2025,0
+Student Placement Data,Chemistry,2.98,0,0,0.3,2029,0
+Student Placement Data,Physics,3.14,0,0,0.31,2028,0
+Student Placement Data,Computer Science,3.59,0,0,0.36,2026,0
+Student Placement Data,Chemistry,2.22,0,0,0.22,2030,0
+Student Placement Data,Physics,3.12,0,0,0.31,2027,0
+Student Placement Data,Computer Science,3.44,0,0,0.34,2028,0
+Student Placement Data,Chemistry,2.54,0,0,0.25,2028,0
+Student Placement Data,Biology,2.1,0,0,0.21,2029,0
+Student Placement Data,Biology,3.98,0,0,0.4,2027,0
+Student Placement Data,Computer Science,3.71,0,0,0.37,2026,0
+Student Placement Data,Biology,2.98,0,0,0.3,2029,0
+Student Placement Data,Physics,2.01,0,0,0.2,2030,0
+Student Placement Data,Physics,2.09,0,0,0.21,2027,0
+Student Placement Data,Physics,3.11,0,0,0.31,2025,0
+Student Placement Data,Computer Science,2,0,0,0.2,2027,0
+Student Placement Data,Computer Science,3.9,0,0,0.39,2028,0
+Student Placement Data,Mathematics,2.63,0,0,0.26,2029,0
+Student Placement Data,Biology,2.61,0,0,0.26,2028,0
+Student Placement Data,Physics,2.04,0,0,0.2,2026,0
+Student Placement Data,Mathematics,3.27,0,0,0.33,2026,0
+Student Placement Data,Chemistry,3.27,0,0,0.33,2029,0
+Student Placement Data,Mathematics,3.41,0,0,0.34,2029,0
+Student Placement Data,Computer Science,2.08,0,0,0.21,2030,0
+Student Placement Data,Physics,3.96,0,0,0.4,2026,0
+Student Placement Data,Physics,3.42,0,0,0.34,2026,0
+Student Placement Data,Mathematics,2.51,0,0,0.25,2030,0
+Student Placement Data,Chemistry,2.14,0,0,0.21,2026,0
+Student Placement Data,Biology,2.34,0,0,0.23,2029,0
+Student Placement Data,Mathematics,2.92,0,0,0.29,2030,0
+Student Placement Data,Physics,2.24,0,0,0.22,2025,0
+Student Placement Data,Computer Science,2.06,0,0,0.21,2026,0
+Student Placement Data,Biology,2.17,0,0,0.22,2029,0
+Student Placement Data,Chemistry,2.57,0,0,0.26,2026,0
+Student Placement Data,Physics,2.71,0,0,0.27,2025,0
+Student Placement Data,Chemistry,2.22,0,0,0.22,2030,0
+Student Placement Data,Mathematics,3.23,0,0,0.32,2025,0
+Student Placement Data,Computer Science,3.9,0,0,0.39,2025,0
+Student Placement Data,Mathematics,3.15,0,0,0.32,2028,0

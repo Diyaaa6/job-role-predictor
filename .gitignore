@@ -1,0 +1,4 @@
+# Create the file and add these lines:
+node_modules/
+.env
+uploads/

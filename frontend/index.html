@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentHub | AI Career Insights</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --accent: #7C3AED;
+      --accent-hover: #6D28D9;
+      --bg-light: #F9FAFB;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --border-color: #E5E7EB;
+    }
+
+    .dark {
+      --bg-light: #111827;
+      --card-bg: #1f2937;
+      --text-main: #f3f4f6;
+      --border-color: #374151;
+    }
+
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: var(--bg-light); 
+      color: var(--text-main); 
+      margin: 0; 
+      overflow-x: hidden; 
+      transition: background 0.3s ease, color 0.3s ease; 
+    }
+
+    .auth-bg { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .wavy-blob { position: absolute; filter: blur(50px); opacity: 0.6; z-index: 0; animation: float 10s infinite ease-in-out; }
+    @keyframes float { 0% { transform: translate(0,0) } 50% { transform: translate(20px, -20px) } 100% { transform: translate(0,0) } }
+    
+    .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1); }
+    .auth-tab { cursor: pointer; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all .2s; color: #6b7280; font-weight: 500; }
+    .auth-tab.active { color: var(--accent); background: #ede9fe; font-weight: 600; }
+
+    #dashboard-container { display: none; min-height: 100vh; }
+    
+    .sidebar-link.active { background-color: #ede9fe; color: #7c3aed; font-weight: 600; }
+    .dark .sidebar-link.active { background-color: rgba(124, 58, 237, 0.1); }
+
+    .content-section.hidden { display: none; }
+    .bg-card { background-color: var(--card-bg); border-color: var(--border-color); }
+
+    .btn-primary { background: var(--accent); color: white; transition: all 0.2s; }
+    .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); }
+    
+    .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    #message-box { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateX(120%); z-index: 999; }
+    #message-box.show { transform: translateX(0); }
+
+    .prediction-gradient { background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%); }
+
+    .input-field { 
+        width: 100%; 
+        background-color: #F3F4F6; 
+        border: 1px solid #E5E7EB; 
+        padding: 0.875rem 1rem; 
+        border-radius: 0.75rem; 
+        outline: none; 
+        transition: all 0.2s;
+    }
+    .dark .input-field { background-color: #374151; border-color: #4b5563; color: white; }
+    .input-field:focus { 
+        background-color: #ffffff; 
+        border-color: #7C3AED; 
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); 
+    }
+    label { font-size: 0.75rem; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.025em; }
+
+    .step-line { position: relative; }
+    .step-line::after { content: ''; position: absolute; top: 1.5rem; left: 3.5rem; right: -3.5rem; height: 2px; border-top: 2px dashed var(--border-color); z-index: 0; }
+  </style>
+</head>
+<body class="light">
+
+  <div id="auth-container" class="auth-bg">
+    <div class="wavy-blob w-96 h-96 bg-purple-300 rounded-full -top-20 -left-20"></div>
+    <div class="wavy-blob w-80 h-80 bg-indigo-300 rounded-full -bottom-20 -right-20"></div>
+
+    <div class="glass-card relative z-10 w-full max-w-4xl rounded-2xl overflow-hidden flex shadow-2xl m-4 min-h-[600px]">
+      <div class="hidden md:flex w-1/2 bg-gradient-to-br from-violet-600 to-indigo-700 p-12 flex-col justify-between text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div>
+          <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm mb-6">
+            <i class="fa-solid fa-graduation-cap text-2xl"></i>
+          </div>
+          <h1 class="text-4xl font-bold leading-tight mb-4">AI Career Forecasting</h1>
+          <p class="text-violet-100 text-lg opacity-90">Unlock your potential with data-driven career path analysis.</p>
+        </div>
+        <div class="text-sm text-violet-200 opacity-70">© 2025 StudentHub AI.</div>
+      </div>
+
+      <div class="w-full md:w-1/2 p-8 md:p-12 bg-white flex flex-col justify-center">
+        <div class="flex bg-gray-100 p-1 rounded-lg mb-8 w-fit mx-auto">
+          <button id="tab-login" class="auth-tab active">Sign In</button>
+          <button id="tab-register" class="auth-tab">Register</button>
+        </div>
+
+        <div id="login-view" class="space-y-6 fade-in">
+          <div class="text-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Welcome Back</h2>
+          </div>
+          <form id="login-form" class="space-y-4">
+            <input id="login-email" type="email" placeholder="Email Address" class="input-field" required />
+            <input id="login-password" type="password" placeholder="Password" class="input-field" required />
+            <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold">Sign In</button>
+          </form>
+          <div class="relative my-4">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+            <div class="relative flex justify-center text-xs"><span class="px-2 bg-white text-gray-400">OR CONTINUE WITH</span></div>
+          </div>
+          <div class="flex justify-center">
+            <div id="g_id_onload" data-client_id="526435487486-oeipknm1gvcf17be6qb9gn8c0r9i42an.apps.googleusercontent.com" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+          </div>
+        </div>
+
+        <div id="register-view" class="hidden space-y-6 fade-in">
+          <div class="text-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Join StudentHub</h2>
+          </div>
+          <form id="register-form" class="space-y-4">
+            <input id="register-username" type="text" placeholder="Full Name" class="input-field" required />
+            <input id="register-email" type="email" placeholder="Email Address" class="input-field" required />
+            <input id="register-password" type="password" placeholder="Create Password" class="input-field" required />
+            <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold">Get Started</button>
+          </form>
+          <div class="relative my-4">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+            <div class="relative flex justify-center text-xs"><span class="px-2 bg-white text-gray-400">OR CONTINUE WITH</span></div>
+          </div>
+          <div class="flex justify-center">
+             <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signup_with" data-size="large" data-logo_alignment="left"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard-container" class="flex h-screen overflow-hidden">
+  <aside class="w-72 bg-card border-r flex flex-col h-full sticky top-0">
+    
+    <div class="p-6 flex-grow overflow-y-auto">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="bg-violet-600 text-white p-2 rounded-lg"><i class="fa-solid fa-bolt"></i></div>
+        <span class="font-bold text-xl tracking-tight">StudentHub</span>
+      </div>
+
+      <nav class="space-y-1">
+        <div id="user-nav">
+          <a class="sidebar-link user-link active flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="home-dashboard">
+            <i class="fa-solid fa-house"></i> Home
+          </a>
+          <a class="sidebar-link user-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="main-dashboard">
+            <i class="fa-solid fa-chart-pie"></i> Insights Overview
+          </a>
+          <a class="sidebar-link user-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="edit-profile">
+            <i class="fa-solid fa-user-gear"></i> Academic Profile
+          </a>
+          <a class="sidebar-link user-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="prediction-history">
+            <i class="fa-solid fa-clock-rotate-left"></i> Prediction History
+          </a>
+        </div>
+
+        <div id="admin-nav" class="hidden">
+          <a class="sidebar-link admin-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="admin-stats">
+            <i class="fa-solid fa-gauge"></i> System Overview
+          </a>
+          <a class="sidebar-link admin-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="admin-training">
+            <i class="fa-solid fa-microchip"></i> Dataset & Training
+          </a>
+          <a class="sidebar-link admin-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="admin-logs">
+            <i class="fa-solid fa-clipboard-list"></i> Activity Logs
+          </a>
+          <a class="sidebar-link admin-link flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer" data-target="admin-feedback-view">
+        <i class="fa-solid fa-comments mr-3"></i> User Feedbacks
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="border-t bg-gray-50/50 p-4 space-y-1">
+      <button id="theme-toggle" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 w-full rounded-xl transition-all">
+        <i class="fa-solid fa-circle-half-stroke"></i>
+        <span class="font-medium text-sm">Toggle Theme</span>
+      </button>
+
+      <button id="logout-btn" class="flex items-center gap-3 px-4 py-3 text-red-500 font-bold hover:bg-red-50 w-full rounded-xl transition-all">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="text-sm">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto p-10 bg-gray-50">
+      <header class="flex justify-between items-center mb-10">
+  <div>
+      <h1 class="text-3xl font-extrabold">Dashboard</h1>
+      <p class="text-gray-500">Real-time career match and analysis</p>
+  </div>
+  
+  <div class="flex items-center gap-2">
+    <div id="nav-profile-trigger" class="flex items-center gap-3 bg-card px-4 py-2 rounded-2xl shadow-sm border cursor-pointer hover:bg-gray-50 transition-all">
+        <div class="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden border shadow-sm">
+            <i id="nav-default-icon" class="fa-solid fa-user text-violet-600"></i>
+            <img id="nav-profile-pic" class="hidden h-full w-full object-cover" src="" alt="Profile">
+        </div>
+        <span id="nav-username" class="font-bold text-gray-700 text-sm">Loading...</span>
+        <input type="file" id="profile-file-input" class="hidden" accept="image/*">
+    </div>
+    
+    <button id="remove-pic-btn" title="Remove Profile Picture" class="h-8 w-8 rounded-full text-gray-400 hover:text-red-500 transition-all">
+        <i class="fa-solid fa-circle-xmark"></i>
+    </button>
+</div>
+</header>
+      
+      <!-- ================= HOME DASHBOARD ================= -->
+  
+<section id="home-dashboard" class="content-section space-y-8">
+
+    <div id="home-welcome-banner" class="bg-gradient-to-r from-violet-600 to-indigo-600 p-8 rounded-3xl text-white mb-8 shadow-lg">
+        <h1 class="text-3xl font-bold">Welcome back, <span id="welcome-name">Student</span>! 👋</h1>
+        <p id="welcome-subtext" class="opacity-90 mt-2">Explore trends and gain clarity on your career path.</p>
+    </div>
+
+    <div id="empty-state-card" class="hidden bg-amber-50 border-2 border-dashed border-amber-200 p-10 rounded-3xl text-center mb-8">
+        <div class="h-16 w-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+            <i class="fa-solid fa-rocket"></i>
+        </div>
+        <h3 class="text-xl font-bold text-amber-900">Unlock Your AI Career Roadmap</h3>
+        <p class="text-amber-700 mt-2 mb-6">Complete your profile to see how your CGPA, projects, and skills map to high-demand roles.</p>
+        <button onclick="document.querySelector('[data-target=\'edit-profile\']').click()" 
+                class="bg-amber-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-amber-700 transition-all shadow-md">
+            Build Your Profile Now
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-card p-6 rounded-2xl shadow border border-gray-100">
+            <h3 class="font-bold text-violet-600 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line"></i> Industry Trends
+            </h3>
+            <p class="text-sm text-gray-500 mt-2">See which roles are popular among students like you.</p>
+        </div>
+
+        <div class="bg-card p-6 rounded-2xl shadow border border-gray-100">
+            <h3 class="font-bold text-indigo-600 flex items-center gap-2">
+                <i class="fa-solid fa-bullseye"></i> Smart Decisions
+            </h3>
+            <p class="text-sm text-gray-500 mt-2">Choose paths based on data, not assumptions.</p>
+        </div>
+
+        <div class="bg-card p-6 rounded-2xl shadow border border-gray-100">
+            <h3 class="font-bold text-purple-600 flex items-center gap-2">
+                <i class="fa-solid fa-bolt"></i> You’re Ahead
+            </h3>
+            <p class="text-sm text-gray-500 mt-2">Most students don’t plan early — you do.</p>
+        </div>
+    </div>
+
+    <div class="bg-card p-6 rounded-3xl border shadow-sm border-l-8 border-indigo-500">
+        <h3 class="font-bold text-lg mb-2 flex items-center gap-2 text-gray-700">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i> Peer Insight
+        </h3>
+        <p id="insight-text" class="text-gray-600 italic">Gathering peer data based on your profile...</p>
+        <div id="alternative-box" class="mt-4 p-3 bg-indigo-50 rounded-xl hidden">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Alternative Path</span>
+            <p id="alternative-text" class="text-sm font-medium text-gray-800"></p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="bg-card p-6 rounded-3xl shadow border">
+        <h3 class="font-bold mb-4 text-gray-700">Degree → Job Role Trends</h3>
+        <div class="chart-container"> <canvas id="degreeJobChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-card p-6 rounded-3xl shadow border">
+        <h3 class="font-bold mb-4 text-gray-700">Job Domain Distribution</h3>
+        <div class="chart-container"> <canvas id="domainChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="bg-card p-6 rounded-3xl border shadow-sm mt-8">
+    <div class="flex items-center gap-3 mb-4">
+        <div class="h-10 w-10 bg-violet-100 text-violet-600 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-route"></i>
+        </div>
+        <div>
+            <h3 class="font-bold text-gray-800">Your Degree's Career Pathways</h3>
+            <p class="text-xs text-gray-500">Visualizing where your peers are headed</p>
+        </div>
+    </div>
+    <div id="user_sankey_chart" style="width: 100%; height: 300px;"></div>
+</div>
+</section>
+      <div id="main-dashboard" class="content-section fade-in space-y-8">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2 space-y-8">
+                <div class="prediction-gradient rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+                    <h2 class="text-5xl font-black mt-6 mb-2" id="hero-prediction">Analyzing...</h2>
+                    <p class="text-violet-100 text-lg opacity-80 mb-8 max-w-md">Professional career match based on your data points.</p>
+                    <div class="flex items-center gap-6">
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-center">
+                            <p class="text-3xl font-bold" id="match-percent">--%</p>
+                            <p class="text-[10px] uppercase font-bold opacity-70">Match Score</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between bg-red-50 p-4 rounded-2xl border border-red-100 mt-4">
+    <div>
+        <p class="text-sm font-bold text-red-700">Not accurate?</p>
+        <p class="text-xs text-red-500">Flag this prediction to help improve our AI model.</p>
+    </div>
+    <button id="flag-current-btn" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition-all">
+        <i class="fa-solid fa-flag mr-1"></i> Flag Prediction
+    </button>
+    
+</div>
+<button id="download-insight-btn" class="bg-violet-100 text-violet-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-violet-200 transition-all flex items-center gap-2">
+    <i class="fa-solid fa-file-pdf"></i> Download Insight Report
+</button>
+<div class="bg-card p-6 rounded-3xl border shadow-sm mt-6">
+    <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-comment-dots text-indigo-600"></i> Rate this Prediction
+    </h3>
+    <div class="flex gap-2 mb-4" id="star-rating">
+        <i class="fa-star fa-regular text-2xl text-amber-400 cursor-pointer" data-val="1"></i>
+        <i class="fa-star fa-regular text-2xl text-amber-400 cursor-pointer" data-val="2"></i>
+        <i class="fa-star fa-regular text-2xl text-amber-400 cursor-pointer" data-val="3"></i>
+        <i class="fa-star fa-regular text-2xl text-amber-400 cursor-pointer" data-val="4"></i>
+        <i class="fa-star fa-regular text-2xl text-amber-400 cursor-pointer" data-val="5"></i>
+    </div>
+    <textarea id="feedback-comment" class="input-field mb-4" placeholder="How can we improve this match? (Optional)"></textarea>
+    <button id="submit-feedback-btn" class="btn-primary px-6 py-2 rounded-xl text-sm font-bold">
+        Submit Review
+    </button>
+</div>
+
+                <div class="bg-card p-6 rounded-3xl border shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-violet-600"></i> Alternative Career Paths
+                    </h3>
+                    <div id="top-matches-list" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        </div>
+                </div>
+                <div id="next-steps-card" class="hidden bg-violet-50 border-l-4 border-violet-600 p-6 rounded-2xl shadow-sm mb-8 animate-pulse-subtle">
+    <div class="flex items-start gap-4">
+        <div class="h-10 w-10 bg-violet-600 text-white rounded-full flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-stairs"></i>
+        </div>
+        <div>
+            <h4 class="font-bold text-violet-900 text-sm uppercase tracking-wider">Recommended Next Step</h4>
+            <p id="next-steps-text" class="text-violet-700 mt-1 font-medium"></p>
+        </div>
+    </div>
+</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-card p-6 rounded-3xl border shadow-sm">
+                        <h4 class="font-bold mb-4 text-gray-400">Skill Competency Map</h4>
+                        <div class="w-full h-64"><canvas id="skillRadar"></canvas></div>
+                    </div>
+                    <div class="bg-card p-6 rounded-3xl border shadow-sm flex flex-col justify-center text-center">
+                        <h4 class="font-bold mb-6 text-gray-400 uppercase text-xs">Readiness</h4>
+                        <div class="text-6xl font-black text-violet-600 mb-2" id="readiness-val">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-card p-6 rounded-3xl border shadow-sm">
+    <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-gray-400">
+        <i class="fa-solid fa-map-location-dot text-violet-600"></i> Career Roadmap
+    </h3>
+    <div class="mb-4">
+    <div class="flex justify-between text-xs font-bold mb-1">
+        <span>PROFILE COMPLETION</span>
+        <span id="roadmap-percent">0%</span>
+    </div>
+    <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+        <div id="roadmap-progress-bar" class="bg-violet-600 h-full transition-all duration-500" style="width: 0%"></div>
+    </div>
+</div>
+
+    <div id="roadmap-steps" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="step-line">
+            <div class="icon w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm"></div>
+            <p class="text-xs font-bold text-gray-500">Graduation</p>
+        </div>
+        <div class="step-line">
+            <div class="icon w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm"></div>
+            <p class="text-xs font-bold text-gray-500">Internship</p>
+        </div>
+        <div class="step-line">
+            <div class="icon w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm"></div>
+            <p class="text-xs font-bold text-gray-500">3+ Projects</p>
+        </div>
+        <div>
+            <div class="icon w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm"></div>
+            <p class="text-xs font-bold text-indigo-600 uppercase tracking-tighter">Career Ready</p>
+        </div>
+    </div>
+</div>
+            <div class="xl:col-span-1 bg-card rounded-3xl border shadow-sm p-6">
+                <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-gray-400"><i class="fa-solid fa-clock-rotate-left"></i> Match History</h3>
+                <div id="history-current-box" class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border-l-4 border-violet-500">
+                    <p class="font-bold" id="history-text">Current Profile Match</p>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div id="edit-profile" class="content-section hidden fade-in">
+        <form id="academic-form" class="max-w-4xl bg-card rounded-3xl shadow-xl border overflow-hidden">
+            <div class="bg-violet-600 p-8 text-white">
+                <h2 class="text-3xl font-bold">Academic Credentials</h2>
+            </div>
+            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-input-group md:col-span-2"><label>Full Name</label><input id="st-name" type="text" class="input-field" required /></div>
+                <div>
+  <label>Highest Degree</label>
+  <select id="st-degree" class="input-field">
+    <option value="B.Sc CS">B.Sc Computer Science</option>
+    <option value="B.Tech CS">B.Tech Computer Science</option>
+    <option value="B.Tech IT">B.Tech Information Technology</option>
+    <option value="BCA">BCA</option>
+    <option value="M.Sc CS">M.Sc Computer Science</option>
+    <option value="M.Tech CS">M.Tech Computer Science</option>
+    <option value="M.Tech AI">M.Tech Artificial Intelligence</option>
+    <option value="MCA">MCA</option>
+    <option value="PhD CS">PhD Computer Science</option>
+  </select>
+</div>
+
+                <div><label>Specialization</label><input id="st-spec" type="text" class="input-field" required /></div>
+                <div><label>CGPA</label><input id="st-cgpa" type="number" step="0.01" class="input-field" required /></div>
+                <div><label>CGPA Scale</label><select id="st-scale" class="input-field"><option value="10">10</option><option value="4">4</option></select></div>
+                <div><label>Grad Year</label><input id="st-year" type="number" class="input-field" required /></div>
+                <div><label>Internship Done?</label><select id="st-intern" class="input-field"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                <div><label>Project Count</label><input id="st-proj-count" type="number" class="input-field" value="0" /></div>
+                <div><label>Certs Count</label><input id="st-cert-count" type="number" class="input-field" value="0" /></div>
+                <div class="md:col-span-2"><label>Key Certifications (Comma separated)</label><input id="st-certs" type="text" class="input-field" placeholder="AWS, Java, etc." /></div>
+                <div class="md:col-span-2">
+    <label class="flex items-center gap-2 mb-2">
+        <i class="fa-solid fa-file-pdf text-red-500"></i> Professional Resume (Optional)
+    </label>
+    <div class="relative group">
+        <label for="st-resume" class="flex items-center justify-between w-full p-4 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer bg-gray-50 hover:bg-violet-50 hover:border-violet-400 transition-all">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-gray-400 group-hover:text-violet-600">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-gray-700" id="resume-status">Choose a PDF file...</p>
+                    <p class="text-[10px] text-gray-400 uppercase">Max size: 5MB</p>
+                </div>
+            </div>
+            <span class="text-xs font-bold text-violet-600 bg-violet-100 px-3 py-1 rounded-lg">Browse</span>
+        </label>
+        <input id="st-resume" type="file" class="hidden" accept=".pdf" />
+    </div>
+</div>
+                <div class="md:col-span-2 pt-4"><button type="submit" class="bg-violet-600 text-white px-10 py-4 rounded-2xl font-bold">Refresh Prediction</button></div>
+            </div>
+        </form>
+      </div>
+      <div id="prediction-history" class="content-section hidden fade-in">
+  <h2 class="text-2xl font-bold mb-6">Prediction History<br><button id="download-history-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2">
+    <i class="fa-solid fa-download"></i> Export History PDF
+</button> </h2>
+  <div id="history-list" class="space-y-4">
+    <p class="text-gray-500">Loading history...</p>
+  </div>
+  
+</div>
+  <section id="admin-stats" class="content-section hidden fade-in space-y-8">
+  <h2 class="text-3xl font-extrabold text-gray-800">System Performance</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-card p-8 rounded-3xl border shadow-sm text-center">
+      <h4 class="text-gray-400 text-xs font-bold uppercase mb-2">Total Active Users</h4>
+      <p class="text-4xl font-black text-violet-600" id="stat-users">0</p>
+    </div>
+    <div class="bg-card p-8 rounded-3xl border shadow-sm text-center">
+      <h4 class="text-gray-400 text-xs font-bold uppercase mb-2">Total Predictions</h4>
+      <p class="text-4xl font-black text-indigo-600" id="stat-preds">0</p>
+    </div>
+    <div class="bg-card p-8 rounded-3xl border shadow-sm text-center">
+      <h4 class="text-gray-400 text-xs font-bold uppercase mb-2">System Status</h4>
+      <p class="text-xl font-bold text-green-500"><i class="fa-solid fa-circle-check"></i> Operational</p>
+    </div>
+  </div>
+  <div class="bg-card p-8 rounded-3xl border shadow-sm mt-8">
+    <h3 class="font-bold text-gray-700 mb-6">Education to Career Flow Analysis</h3>
+    <div id="sankey_chart" style="width: 100%; height: 500px;"></div>
+</div>
+</section>
+
+<section id="admin-training" class="content-section hidden fade-in space-y-8">
+  <h2 class="text-3xl font-extrabold text-indigo-600">Model Management</h2>
+  
+  <div id="training-metrics-card" class="hidden bg-white p-6 rounded-3xl border shadow-sm border-l-8 border-green-500 fade-in">
+      <div class="flex justify-between items-center">
+          <div>
+              <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full uppercase">Current Model Active</span>
+              <h3 class="text-xl font-black mt-2" id="ui-accuracy-val">Accuracy: --%</h3>
+              <p class="text-sm text-gray-500" id="ui-last-trained">Last Trained: Never</p>
+          </div>
+          <div class="text-right">
+              <p class="text-xs font-bold text-gray-400 uppercase">Training File</p>
+              <p class="text-sm font-mono text-indigo-600" id="ui-dataset-name">None</p>
+          </div>
+      </div>
+  </div>
+
+  <div class="bg-card p-6 rounded-3xl border shadow-sm">
+      <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-database text-violet-500"></i> Dataset & Model Library
+      </h3>
+      <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold">
+                  <tr>
+                      <th class="px-4 py-3">Filename</th>
+                      <th class="px-4 py-3">Date</th>
+                      <th class="px-4 py-3">Accuracy</th>
+                      <th class="px-4 py-3">Status</th>
+                      <th class="px-4 py-3 text-right">Action</th>
+                  </tr>
+              </thead>
+              <tbody id="model-history-table">
+                  </tbody>
+          </table>
+      </div>
+  </div>
+
+  <div class="bg-card p-10 rounded-3xl border shadow-sm space-y-6 text-center">
+      <div id="drop-zone" class="border-2 border-dashed border-gray-200 p-8 rounded-2xl cursor-pointer hover:border-violet-400 hover:bg-violet-50 transition-all group">
+          <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-300 group-hover:text-violet-500 mb-4 block"></i>
+          <p id="drop-zone-text" class="text-gray-500">
+              Drag and drop or click to upload new <span class="text-violet-600 font-bold">.CSV training dataset</span>
+          </p>
+          
+          <div id="file-selected-info" class="hidden mt-4 p-3 bg-violet-100 text-violet-700 rounded-xl text-sm font-bold animate-pulse">
+              <i class="fa-solid fa-file-csv mr-2"></i> Selected: <span id="selected-filename"></span>
+          </div>
+
+          <input type="file" id="dataset-upload" class="hidden" accept=".csv" />
+      </div>
+
+      <button id="retrain-btn" onclick="restoreModel('${h._id}', this)" class="w-full btn-primary py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3">
+          <i class="fa-solid fa-sync"></i> Trigger AI Model Retraining
+      </button>
+  </div>
+</section>
+
+<section id="admin-logs" class="content-section hidden fade-in space-y-8">
+    <h2 class="text-3xl font-extrabold text-violet-600">Activity Logs</h2>
+    <div class="bg-card rounded-3xl border shadow-sm overflow-hidden">
+        <div id="admin-user-list" class="divide-y divide-gray-100 max-h-[600px] overflow-y-auto p-4 space-y-3">
+            <p class="p-10 text-center text-gray-400">Loading system activity...</p>
+        </div>
+    </div>
+</section>
+<section id="admin-feedback-view" class="content-section hidden fade-in space-y-8">
+    <h2 class="text-3xl font-extrabold text-indigo-600">User Satisfaction Analytics</h2>
+    
+    <div class="bg-card p-6 rounded-3xl border shadow-sm">
+        <h3 class="text-lg font-bold mb-4">Average Rating vs. Predicted Role</h3>
+        <div class="h-64">
+            <canvas id="feedbackChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-card p-6 rounded-3xl border shadow-sm">
+        <h3 class="text-lg font-bold mb-4 text-gray-400 uppercase tracking-widest text-xs">Recent Comments</h3>
+        <div id="admin-feedback-list" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+            </div>
+    </div>
+    <div id="flagged-review-list" class="space-y-4"></div>
+    <span id="flagged-count" class="text-red-600 font-bold"></span>
+</section>
+    </main>
+  </div>
+
+  <div id="message-box" class="fixed bottom-6 right-6 bg-card shadow-2xl rounded-2xl p-4 flex items-center gap-4 border min-w-[300px]">
+    <div id="msg-icon" class="h-10 w-10 rounded-full flex items-center justify-center"></div>
+    <div><h4 class="font-bold text-sm" id="msg-title">Notification</h4><p id="message-text" class="text-gray-500 text-xs"></p></div>
+  </div>
+<script>
+const API_BASE_URL = 'http://localhost:3000';
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+let radarChart = null;
+
+// --- AUTH UI NAVIGATION ---
+$('#tab-login').onclick = () => { $('#login-view').classList.remove('hidden'); $('#register-view').classList.add('hidden'); $('#tab-login').classList.add('active'); $('#tab-register').classList.remove('active'); };
+$('#tab-register').onclick = () => { $('#login-view').classList.add('hidden'); $('#register-view').classList.remove('hidden'); $('#tab-register').classList.add('active'); $('#tab-login').classList.remove('active'); };
+
+function showMessage(msg, type='success'){
+  $('#message-text').textContent = msg;
+  const icon = $('#msg-icon');
+  if(type==='error'){ icon.className='h-10 w-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center'; icon.innerHTML='<i class="fa-solid fa-xmark"></i>'; }
+  else{ icon.className='h-10 w-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center'; icon.innerHTML='<i class="fa-solid fa-check"></i>'; }
+  $('#message-box').classList.add('show');
+  setTimeout(()=> $('#message-box').classList.remove('show'), 3000);
+}
+
+function updateRadar(edu) {
+    setTimeout(() => {
+        const canvas = document.getElementById('skillRadar');
+        if (!canvas) return;
+        if (radarChart) radarChart.destroy();
+
+        const cgpaVal = Math.min((Number(edu.cgpa) || 0) * 10, 100);
+        const projVal = Math.min((Number(edu.projects) || 0) * 20, 100);
+        const certs = Array.isArray(edu.certifications)
+            ? edu.certifications.length
+            : (edu.certifications?.split(',').filter(Boolean).length || 0);
+        const certVal = Math.min(certs * 15, 100);
+
+        radarChart = new Chart(canvas.getContext('2d'), {
+            type: 'radar',
+            data: {
+                labels: ['Academia', 'Projects', 'Certs', 'Logic', 'Coding', 'Systems'],
+                datasets: [{
+                    label: 'Your Profile',
+                    data: [cgpaVal, projVal, certVal, 80, 75, 60],
+                    backgroundColor: 'rgba(124,58,237,0.25)',
+                    borderColor: '#7C3AED',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: { suggestedMin: 0, suggestedMax: 100, ticks: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+
+                    // 🔥 SKILL BREAKDOWN TOOLTIP
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label;
+                                const value = context.raw;
+                                let info = "";
+
+                                switch (label) {
+                                    case 'Academia':
+                                        info = `Based on CGPA: ${edu.cgpa}`;
+                                        break;
+                                    case 'Projects':
+                                        info = `Derived from ${edu.projects || 0} projects`;
+                                        break;
+                                    case 'Certs':
+                                        info = `From ${certs} certifications`;
+                                        break;
+                                    case 'Logic':
+                                        info = `Estimated from specialization`;
+                                        break;
+                                    case 'Coding':
+                                        info = `Skill relevance for ${edu.predictedJobRole}`;
+                                        break;
+                                    case 'Systems':
+                                        info = `Core systems knowledge score`;
+                                        break;
+                                }
+
+                                return [`Score: ${value}%`, info];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }, 150);
+}
+
+
+
+function updateRoadmap(edu) {
+    const roadmapContainer = $('#roadmap-steps');
+    if(!roadmapContainer) return;
+    
+    // Logic for individual milestone completion
+    const isGraduated = edu.yearOfGraduation <= 2026;
+    const hasInternship = edu.internship === 'Yes';
+    const hasProjects = edu.projects >= 3;
+    const isReady = (Number(edu.matchPercentage) || 0) > 70;
+
+    const steps = [
+        { label: "Graduation", done: isGraduated },
+        { label: "Internship", done: hasInternship },
+        { label: "3+ Projects", done: hasProjects },
+        { label: "Career Ready", done: isReady }
+    ];
+
+    // 🔥 NEW: Calculate Progress Percentage
+    const completedCount = steps.filter(s => s.done).length;
+    const progressPercent = Math.round((completedCount / steps.length) * 100);
+
+    // 🔥 NEW: Update Progress Bar UI
+    const progressBar = $('#roadmap-progress-bar');
+    const percentText = $('#roadmap-percent');
+    
+    if (progressBar) progressBar.style.width = `${progressPercent}%`;
+    if (percentText) percentText.textContent = `${progressPercent}%`;
+
+    // Render individual step icons
+    roadmapContainer.innerHTML = steps.map((step, index) => `
+        <div class="${index < 3 ? 'step-line' : ''}">
+            <div class="icon w-14 h-14 ${step.done ? 'bg-green-100 text-green-600 shadow-green-100' : 'bg-gray-100 text-gray-400'} rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm transition-all duration-500">
+                <i class="fa-solid ${step.done ? 'fa-check' : 'fa-circle-notch'}"></i>
+            </div>
+            <p class="text-xs font-bold ${step.done ? 'text-green-600' : 'text-gray-500'}">${step.label}</p>
+        </div>
+    `).join('');
+}
+function updateUI(user) {
+    if (!user) return;
+
+    const history = user.educationHistory || [];
+    const edu = user.education || (history.length ? history.at(-1) : {});
+
+    /* ========= NAV ========= */
+    $('#nav-username').textContent = user.username || "User";
+
+    /* ========= FORM PREFILL ========= */
+    $('#st-name').value = user.username || "";
+    $('#st-spec').value = edu.specialization || "";
+    $('#st-cgpa').value = edu.cgpa || "";
+    $('#st-year').value = edu.yearOfGraduation || "";
+    $('#st-certs').value = Array.isArray(edu.certifications)
+        ? edu.certifications.join(', ')
+        : (edu.certifications || "");
+    $('#st-proj-count').value = edu.projects || 0;
+    $('#st-intern').value = edu.internship || "No";
+
+    /* ========= PREDICTION ========= */
+    if (edu.predictedJobRole && edu.predictedJobRole !== "Pending") {
+        $('#hero-prediction').textContent = edu.predictedJobRole;
+
+        const score = Number(edu.matchPercentage || 0);
+        $('#match-percent').textContent = score + "%";
+        $('#readiness-val').textContent = score + "%";
+        $('#history-text').textContent = "Matched: " + edu.predictedJobRole;
+
+        /* ========= TOP MATCHES (CLICK TO COMPARE) ========= */
+        const matchesList = $('#top-matches-list');
+        matchesList.innerHTML = "";
+
+        (edu.topMatches || []).forEach(match => {
+            const div = document.createElement('div');
+            div.className =
+                "p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border text-center cursor-pointer hover:border-violet-500 transition group";
+
+            div.innerHTML = `
+                <p class="font-bold text-violet-600">${match.role}</p>
+                <p class="text-xs text-gray-400">${match.confidence}% match</p>
+                <p class="text-[9px] text-violet-400 mt-2 opacity-0 group-hover:opacity-100 font-bold">
+                    CLICK TO COMPARE
+                </p>
+            `;
+
+            div.onclick = () => {
+                $('#readiness-val').textContent = match.confidence + "%";
+                $$('#top-matches-list div').forEach(d =>
+                    d.classList.remove('border-violet-600', 'bg-violet-50')
+                );
+                div.classList.add('border-violet-600', 'bg-violet-50');
+
+                compareSkillRadar(edu, match.role);
+            };
+
+            matchesList.appendChild(div);
+        });
+
+        updateRadar(edu);   // default view
+        updateRoadmap(edu);
+    } else {
+        $('#hero-prediction').textContent = "Pending Analysis";
+        $('#match-percent').textContent = "--%";
+        $('#readiness-val').textContent = "--%";
+    }
+}
+
+let selectedRating = 0;
+async function loadInsights() {
+  const token = localStorage.getItem('jwtToken');
+  if (!token) return;
+
+  const res = await fetch(`${API_BASE_URL}/education/insights`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  if (!res.ok) return;
+
+  const data = await res.json();
+
+  if ($('#insight-text')) {
+    $('#insight-text').textContent = data.insightText || "No insights yet.";
+  }
+}
+
+// Handle Star Selection
+$$('#star-rating i').forEach(star => {
+    star.onclick = () => {
+        selectedRating = star.dataset.val;
+        $$('#star-rating i').forEach(s => {
+            s.classList.toggle('fa-solid', s.dataset.val <= selectedRating);
+            s.classList.toggle('fa-regular', s.dataset.val > selectedRating);
+        });
+    };
+});
+
+// Update the submit button listener in index.html
+$('#submit-feedback-btn').onclick = async () => {
+    const token = localStorage.getItem('jwtToken');
+    const comment = $('#feedback-comment').value;
+
+    if (selectedRating === 0) {
+        showMessage("Please select a star rating", "error");
+        return;
+    }
+
+    try {
+        // Fetch current profile to get the correct prediction ID
+        const profileRes = await fetch(`${API_BASE_URL}/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const profileData = await profileRes.json();
+        const predId = profileData.user.education?._id;
+
+        if (!predId) {
+            showMessage("No prediction found to rate", "error");
+            return;
+        }
+
+        // POST the feedback data
+        const res = await fetch(`${API_BASE_URL}/feedback/submit`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ 
+                predictionId: predId, 
+                rating: selectedRating, 
+                comment: comment 
+            })
+        });
+
+        if (res.ok) {
+            showMessage("Review submitted to database!", "success");
+            $('#feedback-comment').value = ''; // Reset the text area
+            // Reset stars
+            $$('#star-rating i').forEach(s => s.classList.replace('fa-solid', 'fa-regular'));
+        } else {
+            showMessage("Database rejected feedback", "error");
+        }
+    } catch (err) {
+        console.error("Submission Error:", err);
+        showMessage("Connection error to backend", "error");
+    }
+};
+
+async function fetchPredictionHistory() {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/education/history`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Failed to load history");
+
+        const data = await res.json();
+        const container = $('#history-list');
+        container.innerHTML = '';
+
+        const historyData = data.history || []; 
+
+        if (historyData.length === 0) {
+            container.innerHTML = `<p class="text-gray-500 p-4 text-center bg-gray-50 rounded-2xl border-2 border-dashed">No predictions yet. Go to 'Academic Profile' to start.</p>`;
+            return;
+        }
+
+        historyData.forEach(item => {
+            const div = document.createElement('div');
+            
+            // Logic for Flagged Badge
+            const isFlagged = item.isFlagged ? 
+                `<span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded-full border border-red-200 uppercase">
+                    <i class="fa-solid fa-circle-exclamation"></i> Flagged
+                </span>` : '';
+            
+            // Render Star Rating UI
+            const ratingStars = item.userRating ? 
+                `<div class="flex items-center gap-1 text-amber-500 text-xs mb-2 mt-1">
+                    ${'★'.repeat(item.userRating)}${'☆'.repeat(5 - item.userRating)}
+                    <span class="text-gray-400 ml-1 font-medium">(${item.userRating}/5)</span>
+                </div>` : '';
+
+            // Render Written Feedback
+            const userComment = item.userComment ? 
+                `<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-[11px] text-gray-500 italic border border-gray-100 mb-3 mt-2 relative">
+                    <i class="fa-solid fa-quote-left mr-1 opacity-20 text-lg absolute -top-1 -left-1"></i> 
+                    <span class="relative z-10 pl-2">${item.userComment}</span>
+                </div>` : '';
+            
+            // Dynamic border color based on flag status
+            const borderClass = item.isFlagged ? 'border-red-500 bg-red-50/30' : 'border-violet-500';
+
+            div.className = `bg-card p-5 rounded-2xl border shadow-sm mb-4 border-l-4 ${borderClass} transition-all hover:shadow-md`;
+            div.innerHTML = `
+              <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h3 class="font-bold text-violet-600 text-lg leading-tight">
+                        ${item.predictedJobRole || 'Analysis Pending'}
+                    </h3>
+                    <div class="flex gap-2 items-center mt-1">
+                        ${isFlagged}
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md uppercase tracking-wider">
+                    ${new Date(item.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+
+              ${ratingStars}
+              ${userComment}
+
+              <p class="text-xs text-gray-500 mb-3">
+                Confidence Score: <span class="font-bold text-indigo-600">${item.matchPercentage}%</span>
+              </p>
+
+              <div class="flex flex-wrap gap-2">
+                ${(item.topMatches || []).map(m =>
+                  `<span class="text-[10px] uppercase font-bold bg-violet-50 text-violet-600 px-2 py-1 rounded-lg border border-violet-100">
+                    ${m.role}
+                  </span>`
+                ).join('')}
+              </div>
+            `;
+            container.appendChild(div);
+        });
+    } catch (err) {
+        console.error("History Fetch Error:", err);
+        $('#history-list').innerHTML = `<p class="text-red-500 bg-red-50 p-4 rounded-xl">Error connecting to server.</p>`;
+    }
+}
+async function fetchProfileAndUpdateUI() {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/profile`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) return;
+
+        const { user } = await res.json();
+        if ($('#welcome-name')) $('#welcome-name').textContent = user.username;
+        window.currentUserRole = user.role;
+
+        updateUI(user);
+
+// If the field is empty in the database, hide the image
+// ... after updateUI(user);
+const avatarImg = $('#nav-profile-pic');
+const defaultIcon = $('#nav-default-icon');
+
+// Strict check: only show if the field exists and is not empty
+if (user.profilePic && user.profilePic.trim() !== "") {
+    avatarImg.src = `${API_BASE_URL}${user.profilePic}`;
+    avatarImg.classList.remove('hidden');
+    defaultIcon.classList.add('hidden');
+} else {
+    avatarImg.classList.add('hidden');
+    avatarImg.src = ""; // Clear the URL to avoid browser "ghosting"
+    defaultIcon.classList.remove('hidden');
+}
+        // --- ADD THIS LOGIC HERE ---
+        // Add this to your fetchProfileAndUpdateUI function
+if (user.role === 'admin') {
+    window.currentUserRole = 'admin';
+
+    // Show Admin Nav, Hide User Nav
+    $('#user-nav').classList.add('hidden');
+    $('#admin-nav').classList.remove('hidden');
+
+    // Hide all student sections
+    $$('.content-section').forEach(s => s.classList.add('hidden'));
+    
+    // Show Admin Stats by default
+    $('#admin-stats').classList.remove('hidden');
+
+    // Set Sidebar Active State
+    $$('.sidebar-link').forEach(l => l.classList.remove('active'));
+    $('.sidebar-link[data-target="admin-stats"]').classList.add('active');
+
+    $('#auth-container').style.display = 'none';
+    $('#dashboard-container').style.display = 'flex';
+
+    fetchAdminStats();
+    return; // Exit to prevent student UI logic from running
+}
+
+
+
+        $('#auth-container').style.display = 'none';
+        $('#dashboard-container').style.display = 'flex';
+        // USER DEFAULT LANDING
+// USER DEFAULT LANDING
+$$('.content-section').forEach(s => s.classList.add('hidden'));
+$('#home-dashboard')?.classList.remove('hidden');
+
+$$('.sidebar-link').forEach(l => l.classList.remove('active'));
+$('.sidebar-link[data-target="home-dashboard"]')?.classList.add('active');
+
+// Load HOME graphs
+loadDegreeJobChart();
+loadDomainChart();
+loadCareerInsights();
+
+    } catch (err) {
+        console.error("Profile Sync Error:", err);
+    }
+}
+// 1. When the name is clicked, trigger the hidden file input
+$('#nav-profile-trigger').onclick = () => {
+    $('#profile-file-input').click();
+};
+
+// 2. When a file is selected from local storage
+$('#profile-file-input').onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/profile/upload-pic`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData // Note: Content-Type is set automatically for FormData
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            showMessage("Profile picture updated!", "success");
+            // Update the image on the screen immediately
+            const avatarImg = $('#nav-profile-pic');
+            avatarImg.src = `${API_BASE_URL}${data.profilePic}`;
+            avatarImg.classList.remove('hidden');
+            $('#nav-default-icon').classList.add('hidden');
+        } else {
+            showMessage(data.message, "error");
+        }
+    } catch (err) {
+        showMessage("Upload failed", "error");
+    }
+};
+
+// Retrain Button Listener
+// Remove Profile Picture Logic
+$('#remove-pic-btn').onclick = async () => {
+    if(!confirm("Are you sure you want to permanently delete your profile photo?")) return;
+    
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/profile/remove-pic`, {
+            method: 'DELETE', // Must match your backend route type
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+            showMessage("Photo deleted from database", "success");
+            
+            // 1. Physically clear the image element to prevent ghosting
+            const avatarImg = $('#nav-profile-pic');
+            avatarImg.src = ""; 
+            avatarImg.classList.add('hidden');
+            
+            // 2. Show the default icon
+            $('#nav-default-icon').classList.remove('hidden');
+        } else {
+            const data = await res.json();
+            showMessage(data.message || "Failed to remove from server", "error");
+        }
+    } catch (err) {
+        console.error("Delete Error:", err);
+        showMessage("Connection error to backend", "error");
+    }
+};
+
+// index.html - Update loadCareerInsights function
+async function loadCareerInsights() {
+    const token = localStorage.getItem('jwtToken');
+    const container = $('#home-dashboard'); // Or a specific insight div
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/education/insights`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        const insightBox = $('#insight-text');
+        if (data.peerAverages) {
+            const cgpaDiff = (data.userStats.cgpa - data.peerAverages.cgpa).toFixed(2);
+            const projDiff = data.userStats.projects - data.peerAverages.projects;
+
+            insightBox.innerHTML = `
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-white rounded-2xl border shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Avg. CGPA for ${data.predictedRole}</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-2xl font-black">${data.peerAverages.cgpa}</span>
+                            <span class="text-xs font-bold ${cgpaDiff >= 0 ? 'text-green-500' : 'text-red-500'} mb-1">
+                                ${cgpaDiff >= 0 ? '↑' : '↓'} ${Math.abs(cgpaDiff)} from yours
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-white rounded-2xl border shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Avg. Projects</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-2xl font-black">${data.peerAverages.projects}</span>
+                            <span class="text-xs font-bold ${projDiff >= 0 ? 'text-green-500' : 'text-red-500'} mb-1">
+                                ${projDiff >= 0 ? '↑' : '↓'} ${Math.abs(projDiff)} from yours
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-4 text-xs text-indigo-600 font-medium">
+                    <i class="fa-solid fa-circle-info"></i> Based on data from ${data.peerCount} other ${data.predictedRole} matches.
+                </p>
+            `;
+        }
+    } catch (err) {
+        console.error("Stack-up error:", err);
+    }
+}
+// Helper to toggle views without the "flash"
+function showAuth(shouldShow) {
+    $('#auth-container').style.display = shouldShow ? 'flex' : 'none';
+    $('#dashboard-container').style.display = shouldShow ? 'none' : 'flex';
+}
+
+// --- INIT DASHBOARD ---
+(function initDashboard() {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+        fetchProfileAndUpdateUI();
+    } else {
+        $('#auth-container').style.display = 'flex';
+        $('#dashboard-container').style.display = 'none';
+    }
+})();
+
+function compareSkillRadar(edu, targetRole) {
+    const canvas = document.getElementById('skillRadar');
+    if (!canvas || !radarChart) return;
+
+    const roleBenchmarks = {
+        "ML Engineer": [70, 95, 85, 95, 85, 80],
+        "Software Engineer": [85, 80, 75, 90, 95, 85],
+        "Cyber Security Analyst": [75, 75, 95, 85, 75, 95],
+        "Data Analyst": [90, 80, 70, 90, 65, 75]
+    };
+
+    const benchmark = roleBenchmarks[targetRole] || [75, 75, 75, 75, 75, 75];
+
+    const cgpaVal = Math.min((Number(edu.cgpa) || 0) * 10, 100);
+    const projVal = Math.min((Number(edu.projects) || 0) * 20, 100);
+    const certCount = Array.isArray(edu.certifications)
+        ? edu.certifications.length
+        : (edu.certifications?.split(',').filter(Boolean).length || 0);
+    const certVal = Math.min(certCount * 15, 100);
+
+    radarChart.destroy();
+
+    radarChart = new Chart(canvas.getContext('2d'), {
+        type: 'radar',
+        data: {
+            labels: ['Academia', 'Projects', 'Certs', 'Logic', 'Coding', 'Systems'],
+            datasets: [
+                {
+                    label: 'Your Profile',
+                    data: [cgpaVal, projVal, certVal, 80, 75, 60],
+                    backgroundColor: 'rgba(124,58,237,0.2)',
+                    borderColor: '#7C3AED',
+                    borderWidth: 2
+                },
+                {
+                    label: `Ideal ${targetRole}`,
+                    data: benchmark,
+                    backgroundColor: 'rgba(16,185,129,0.1)',
+                    borderColor: '#10B981',
+                    borderDash: [5, 5],
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { display: false } } },
+            plugins: {
+    legend: {
+        display: true,
+        position: 'bottom',
+        labels: { boxWidth: 10, font: { size: 10 } }
+    },
+
+    // 🔥 TOOLTIP FOR COMPARISON MODE
+    tooltip: {
+        callbacks: {
+            label: function (context) {
+                const datasetLabel = context.dataset.label;
+                const value = context.raw;
+
+                if (datasetLabel.includes('Ideal')) {
+                    return `${datasetLabel} target: ${value}%`;
+                }
+                return `Your ${context.label}: ${value}%`;
+            }
+        }
+    }
+}
+
+        }
+    });
+}
+
+$('#academic-form').onsubmit = async (e) => {
+    e.preventDefault();
+
+    const btn = $('#academic-form button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Analyzing...`;
+
+    const payload = {
+        degree: $('#st-degree').value,
+        specialization: $('#st-spec').value,
+        cgpa: Number($('#st-cgpa').value),
+        cgpaOutOf: $('#st-scale').value,
+        yearOfGraduation: Number($('#st-year').value),
+        certifications: $('#st-certs').value || "",
+        internship: $('#st-intern').value,
+        projects: Number($('#st-proj-count').value) || 0,
+        skills: $('#st-certs').value
+            ? $('#st-certs').value.split(',').map(s => s.trim()).filter(Boolean)
+            : []
+    };
+
+    try {
+        const token = localStorage.getItem('jwtToken');
+
+        const res = await fetch(`${API_BASE_URL}/education/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            showMessage(data.message || 'Prediction failed', 'error');
+            return;
+        }
+
+        // ✅ RE-FETCH FROM BACKEND (DO NOT MANUALLY BUILD UI)
+        await fetchProfileAndUpdateUI();
+
+        // ✅ SWITCH TO DASHBOARD
+        $$('.sidebar-link').forEach(l => l.classList.remove('active'));
+        $('.sidebar-link[data-target="main-dashboard"]').classList.add('active');
+        $$('.content-section').forEach(s => s.classList.add('hidden'));
+        $('#main-dashboard').classList.remove('hidden');
+
+        showMessage('Career Prediction Refreshed!', 'success');
+
+    } catch (err) {
+        console.error("REAL ERROR:", err);
+        showMessage("Connection error. Check browser console.", "error");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Refresh Prediction";
+    }
+};
+
+// --- LOGIN FORM ---
+$('#login-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const email = $('#login-email').value;
+    const password = $('#login-password').value;
+    try {
+        const res = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        
+        if(!res.ok) return showMessage(data.message || 'Login failed', 'error');
+        
+        localStorage.setItem('jwtToken', data.token);
+
+        // Fetching the profile here will now trigger the new Admin-first logic 
+        await fetchProfileAndUpdateUI();
+        
+        showMessage('Welcome back!', 'success');
+    } catch(err){
+        showMessage('Login failed. Check server connection.', 'error');
+    }
+};
+
+// --- REGISTER FORM ---
+$('#register-form').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const res = await fetch(`${API_BASE_URL}/auth/register`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ username:$('#register-username').value, email:$('#register-email').value, password:$('#register-password').value })
+        });
+        const d = await res.json();
+        if(res.ok){ 
+            localStorage.setItem('jwtToken', d.token); 
+            $('#auth-container').style.display='none';
+            $('#dashboard-container').style.display='flex';
+            fetchProfileAndUpdateUI(d.token);
+        } else showMessage(d.message,'error');
+    } catch(err){ showMessage("Connection Error","error"); }
+};
+// Variable to store resume name for the PDF report
+let uploadedResumeName = "Not Provided";
+
+$('#st-resume').onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.type !== "application/pdf") {
+            showMessage("Please upload a PDF file only", "error");
+            e.target.value = "";
+            return;
+        }
+        uploadedResumeName = file.name;
+        $('#resume-status').textContent = file.name;
+        $('#resume-status').classList.add('text-violet-600');
+        showMessage("Resume linked to profile!", "success");
+    }
+};
+
+$('#download-insight-btn').onclick = async () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const token = localStorage.getItem('jwtToken');
+    const res = await fetch(`${API_BASE_URL}/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const { user } = await res.json();
+    const edu = user.education;
+
+    // Report Header
+    doc.setFontSize(22);
+    doc.setTextColor(124, 58, 237); // Violet
+    doc.text("Career Insight Report", 20, 20);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(`Generated for: ${user.username} on ${new Date().toLocaleDateString()}`, 20, 30);
+
+    // Core Prediction
+    doc.setDrawColor(200);
+    doc.line(20, 35, 190, 35);
+    doc.setFontSize(16);
+    doc.setTextColor(0);
+    doc.text(`Primary Match: ${edu.predictedJobRole}`, 20, 45);
+    doc.text(`Confidence Score: ${edu.matchPercentage}%`, 20, 55);
+
+    // Top Matches Table
+    const tableData = edu.topMatches.map(m => [m.role, `${m.confidence}%`]);
+    doc.autoTable({
+        startY: 65,
+        head: [['Alternative Pathway', 'Match Percentage']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [124, 58, 237] }
+    });
+
+    // Roadmap Status
+    const roadmapY = doc.lastAutoTable.finalY + 20;
+    doc.text("Roadmap Progress:", 20, roadmapY);
+    doc.setFontSize(10);
+    doc.setTextColor(124, 58, 237);
+doc.text(`Attached Resume: ${uploadedResumeName}`, 20, roadmapY + 35)
+    doc.text(`- Graduation (${edu.yearOfGraduation}): ${edu.yearOfGraduation <= 2026 ? 'COMPLETED' : 'PENDING'}`, 25, roadmapY + 10);
+    doc.text(`- Internship Experience: ${edu.internship === 'Yes' ? 'COMPLETED' : 'PENDING'}`, 25, roadmapY + 17);
+    doc.text(`- Technical Projects: ${edu.projects} logged`, 25, roadmapY + 24);
+
+    doc.save(`${user.username}_Career_Insight.pdf`);
+};
+
+$('#download-history-btn').onclick = async () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const token = localStorage.getItem('jwtToken');
+    const res = await fetch(`${API_BASE_URL}/education/history`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+
+    doc.setFontSize(20);
+    doc.text("Full Prediction History Audit", 20, 20);
+
+    const historyRows = data.history.map(item => [
+        new Date(item.createdAt).toLocaleDateString(),
+        item.predictedJobRole,
+        `${item.matchPercentage}%`,
+        item.userRating ? `${item.userRating}/5` : 'N/A',
+        item.userComment || 'No comment'
+    ]);
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Date', 'Role', 'Score', 'Rating', 'User Feedback']],
+        body: historyRows,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [79, 70, 229] } // Indigo
+    });
+
+    doc.save("Career_Prediction_History.pdf");
+};
+
+// --- GOOGLE LOGIN ---
+async function handleCredentialResponse(response) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/auth/google`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:response.credential }) });
+        const d = await res.json();
+        if(res.ok){ 
+            localStorage.setItem('jwtToken', d.token); 
+            $('#auth-container').style.display='none';
+            $('#dashboard-container').style.display='flex';
+            fetchProfileAndUpdateUI(d.token);
+        } else showMessage(d.message || "Google Sign In Failed", "error");
+    } catch(err){ showMessage("Google Sign In Failed", "error"); }
+}
+let degreeJobChart = null;
+let domainChart = null;
+
+async function loadDegreeJobChart() {
+  const token = localStorage.getItem('jwtToken');
+  if (!token) return;
+
+  const res = await fetch(`${API_BASE_URL}/stats/degree-job`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+
+  const degrees = Object.keys(data);
+  const allRoles = new Set();
+
+  degrees.forEach(d =>
+    Object.keys(data[d]).forEach(r => allRoles.add(r))
+  );
+
+  const datasets = [...allRoles].map(role => ({
+    label: role,
+    data: degrees.map(d => data[d][role] || 0),
+    borderWidth: 1
+  }));
+
+  if (degreeJobChart) degreeJobChart.destroy();
+
+  degreeJobChart = new Chart(
+    document.getElementById('degreeJobChart'),
+    {
+      type: 'bar',
+      data: {
+        labels: degrees,
+        datasets
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    }
+  );
+}
+async function loadDomainChart() {
+  const token = localStorage.getItem('jwtToken');
+  if (!token) return;
+
+  const res = await fetch(`${API_BASE_URL}/stats/job-domains`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+
+  if (domainChart) domainChart.destroy();
+
+  domainChart = new Chart(
+    document.getElementById('domainChart'),
+    {
+      type: 'pie',
+      data: {
+        labels: Object.keys(data),
+        datasets: [{
+          data: Object.values(data),
+          backgroundColor: [
+            '#7C3AED', '#6366F1', '#22C55E', '#F59E0B', '#EF4444'
+          ]
+        }]
+      }
+    }
+  );
+}
+
+// index.html - Replace your current fetchAdminStats function
+async function fetchAdminStats() {
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/stats`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json(); 
+        // === ADD THESE LINES TO FIX THE 0 DISPLAY ===
+        if ($('#stat-users')) $('#stat-users').textContent = data.totalUsers || 0;
+        if ($('#stat-preds')) $('#stat-preds').textContent = data.totalPredictions || 0;
+
+        const logContainer = $('#admin-user-list');
+        logContainer.innerHTML = '';
+
+        data.users.forEach(u => {
+            u.educationHistory.forEach(pred => {
+                const div = document.createElement('div');
+                
+                // Visual indicators for Flagged vs Stable predictions
+                const flagBadge = pred.isFlagged 
+                    ? `<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded-lg border border-red-200 animate-pulse">FLAGGED</span>`
+                    : `<span class="px-2 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-lg border border-green-100">STABLE</span>`;
+
+                // Display written feedback if provided
+                const commentBox = pred.userComment ? `
+                    <div class="mt-2 p-3 bg-gray-50 rounded-xl border-l-4 ${pred.isFlagged ? 'border-red-400' : 'border-violet-400'} italic text-[11px] text-gray-600">
+                        <i class="fa-solid fa-comment-dots mr-1"></i> "${pred.userComment}"
+                    </div>` : '';
+
+                div.className = `p-4 rounded-2xl border mb-3 shadow-sm ${pred.isFlagged ? 'border-red-200 bg-red-50/20' : 'border-gray-100 bg-white'}`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold text-violet-600 uppercase tracking-tighter">${new Date(pred.createdAt).toLocaleDateString()}</p>
+                            <h4 class="font-bold text-gray-800">${u.username} <span class="text-gray-400 mx-1">➜</span> ${pred.predictedJobRole}</h4>
+                            <p class="text-[10px] text-gray-500">CGPA: ${pred.cgpa} | Match Score: ${pred.matchPercentage}%</p>
+                        </div>
+                        <div class="text-right">
+                            ${flagBadge}
+                            <div class="text-amber-500 text-[10px] mt-1">
+                                ${pred.userRating ? '★'.repeat(pred.userRating) + '☆'.repeat(5 - pred.userRating) : ''}
+                            </div>
+                        </div>
+                    </div>
+                    ${commentBox}
+                `;
+                logContainer.appendChild(div);
+            });
+        });
+        
+        // Refresh the Model Library table
+        fetchRetrainHistory(); 
+    } catch (err) { console.error("Admin stats fetch failed", err); }
+}
+
+async function fetchFlaggedPredictions() {
+    const token = localStorage.getItem('jwtToken');
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/flagged-predictions`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const flagged = await res.json();
+        const container = $('#flagged-review-list');
+        container.innerHTML = '';
+
+        if (flagged.length === 0) {
+            container.innerHTML = `
+              <div class="text-center text-gray-400 text-sm italic">
+                No flagged predictions 🎉
+              </div>`;
+            return;
+        }
+
+        flagged.forEach(pred => {
+            const div = document.createElement('div');
+            div.className = 'p-4 bg-red-50/30 border border-red-200 rounded-2xl shadow-sm';
+
+            div.innerHTML = `
+              <div class="flex justify-between">
+                <div>
+                  <p class="text-[10px] uppercase font-bold text-red-600">
+                    Flagged Prediction
+                  </p>
+                  <h4 class="font-bold text-gray-800">
+                    ${pred.predictedJobRole}
+                  </h4>
+                  <p class="text-[11px] text-gray-600">
+                    CGPA: ${pred.cgpa} | Match: ${pred.matchPercentage}%
+                  </p>
+                </div>
+                <span class="px-2 py-1 bg-red-200 text-red-700 text-[10px] font-bold rounded-lg">
+                  NEEDS REVIEW
+                </span>
+              </div>
+
+              ${pred.userComment ? `
+                <div class="mt-2 p-3 bg-white rounded-xl text-[11px] italic border-l-4 border-red-400">
+                  "${pred.userComment}"
+                </div>` : ''}
+            `;
+
+            container.appendChild(div);
+        });
+
+    } catch (err) {
+        console.error("Failed to load flagged predictions", err);
+    }
+}
+async function fetchFlaggedCount() {
+    const token = localStorage.getItem('jwtToken');
+    const res = await fetch(`${API_BASE_URL}/admin/flagged-count`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    $('#flagged-count').textContent = `⚠️ ${data.flaggedCount}`;
+}
+
+// Add this inside your <script> tag in index.html
+$('#flag-current-btn').onclick = async () => {
+    const token = localStorage.getItem('jwtToken');
+    
+    // 1. Get current profile to find the active prediction ID
+    const profileRes = await fetch(`${API_BASE_URL}/profile`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const profileData = await profileRes.json();
+    const predId = profileData.user.education?._id;
+
+    if (!predId) {
+        showMessage("No active prediction found to flag", "error");
+        return;
+    }
+
+    // 2. Send flag request to backend
+    const res = await fetch(`${API_BASE_URL}/education/flag`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ predictionId: predId })
+    });
+
+    if (res.ok) {
+        showMessage("Prediction flagged for admin review", "success");
+        $('#flag-current-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        $('#flag-current-btn').disabled = true;
+    } else {
+        showMessage("Failed to flag prediction", "error");
+    }
+};
+
+async function fetchRetrainHistory() {
+    const token = localStorage.getItem('jwtToken');
+    const res = await fetch(`${API_BASE_URL}/admin/retrain-history`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    const history = await res.json();
+    
+    const tableBody = $('#model-history-table');
+    tableBody.innerHTML = history.map(h => `
+        <tr class="border-b border-gray-50">
+            <td class="px-4 py-3 font-mono text-[11px] text-indigo-600">${h.fileName}</td>
+            <td class="px-4 py-3 text-gray-500">${new Date(h.trainedAt).toLocaleDateString()}</td>
+            <td class="px-4 py-3 font-bold">${h.accuracy}%</td>
+            <td class="px-4 py-3">
+                ${h.isActive ? '<span class="text-green-500 font-bold text-[10px]">ACTIVE</span>' : '<span class="text-gray-300 text-[10px]">INACTIVE</span>'}
+            </td>
+            <td class="px-4 py-3 text-right">
+  ${!h.isActive 
+    ? `<button onclick="restoreModel('${h._id}', this)" 
+        class="bg-gray-100 hover:bg-violet-600 hover:text-white px-3 py-1 rounded-lg text-[10px] font-bold transition-all">
+        RESTORE
+      </button>` 
+    : '-'}
+</td>
+
+        </tr>
+    `).join('');
+}
+
+async function restoreModel(id, btn) {
+    if (!confirm("Revert AI to this specific model version?")) return;
+
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "RESTORING...";
+
+    const token = localStorage.getItem('jwtToken');
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/restore-model`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ historyId: id })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            showMessage(data.message || "Model Restored Successfully!", "success");
+            await fetchRetrainHistory();
+
+            if ($('#ui-accuracy-val') && data.accuracy !== undefined) {
+                $('#ui-accuracy-val').textContent = `Accuracy: ${data.accuracy}%`;
+                $('#ui-last-trained').textContent = `Restored on: ${new Date().toLocaleTimeString()}`;
+            }
+        } else {
+            showMessage(data.message || "Restore failed", "error");
+        }
+    } catch (err) {
+        console.error("Restore Error:", err);
+        showMessage("Connection error to server", "error");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+// --- THEME & NAV ---
+$('#theme-toggle').onclick = ()=>{ 
+    const isDark=document.body.classList.toggle('dark'); 
+    localStorage.setItem('theme',isDark?'dark':'light'); 
+};
+
+if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
+
+// Remove Profile Picture Logic
+$('#remove-pic-btn').onclick = async () => {
+    if(!confirm("Are you sure you want to permanently delete your profile photo?")) return;
+    
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/profile/remove-pic`, {
+            method: 'DELETE', // Must match your backend route
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+            showMessage("Photo deleted from database", "success");
+            
+            // 1. Physically clear the image element to prevent ghosting
+            const avatarImg = $('#nav-profile-pic');
+            avatarImg.src = ""; 
+            avatarImg.classList.add('hidden');
+            
+            // 2. Revert to the default user icon
+            $('#nav-default-icon').classList.remove('hidden');
+        } else {
+            const data = await res.json();
+            showMessage(data.message || "Server refused deletion", "error");
+        }
+    } catch (err) {
+        console.error("Delete Error:", err);
+        showMessage("Connection error to backend", "error");
+    }
+};
+// PASTE THE NEW CODE HERE:
+// Universal Navigation Switcher
+$$('.sidebar-link').forEach(link => {
+    link.onclick = (e) => {
+        const targetId = link.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+
+        if (!targetSection) return;
+
+        // 1. Reset all links and sections
+        $$('.sidebar-link').forEach(l => l.classList.remove('active', 'bg-violet-600', 'text-white'));
+        $$('.content-section').forEach(s => s.classList.add('hidden'));
+
+        // 2. Activate the clicked tab
+        link.classList.add('active');
+        targetSection.classList.remove('hidden');
+
+        // 3. Special data loading triggers
+        if (targetId.startsWith('admin')) fetchAdminStats();
+        if (targetId === 'home-dashboard') { loadDegreeJobChart(); loadDomainChart(); }
+        if (targetId === 'prediction-history') fetchPredictionHistory();
+        
+        // --- ADD ONLY THIS LINE ---
+        if (targetId === 'admin-feedback-view') loadFeedbackAnalytics();
+    };
+});
+// --- ADMIN DATASET UPLOAD LOGIC ---
+const dropZone = $('#drop-zone');
+const datasetInput = $('#dataset-upload');
+
+// ================= SIDEBAR NAVIGATION (FIXED) =================
+$$('.sidebar-link').forEach(link => {
+    link.onclick = (e) => {
+        const targetId = link.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+
+        if (!targetSection) return;
+
+        // 1. Reset all links and sections
+        $$('.sidebar-link').forEach(l =>
+            l.classList.remove('active', 'bg-violet-600', 'text-white')
+        );
+        $$('.content-section').forEach(s =>
+            s.classList.add('hidden')
+        );
+
+        // 2. Activate clicked tab
+        link.classList.add('active');
+        targetSection.classList.remove('hidden');
+
+        // 3. Special data loading triggers (UNCHANGED LOGIC)
+        if (targetId.startsWith('admin')) {
+            fetchAdminStats();
+            if (typeof google !== 'undefined' && google.charts) {
+                google.charts.setOnLoadCallback(drawSankeyChart);
+            }
+        }
+
+        if (targetId === 'home-dashboard') {
+            loadDegreeJobChart();
+            loadDomainChart();
+            if (typeof google !== 'undefined' && google.charts) {
+        google.charts.setOnLoadCallback(drawUserSankey);
+        }
+    }
+        if (targetId === 'prediction-history') {
+            fetchPredictionHistory();
+        }
+
+        if (targetId === 'admin-feedback-view') {
+            loadFeedbackAnalytics();
+            fetchFlaggedPredictions();    // Loads the red "Needs Review" list
+            fetchFlaggedCount();
+        }
+    };
+});
+
+// ================= DATASET UPLOAD =================
+
+// Trigger file input when clicking the drop zone
+dropZone.onclick = () => datasetInput.click();
+
+// Drag and Drop Visual Effects
+dropZone.ondragover = (e) => {
+    e.preventDefault();
+    dropZone.classList.add('border-violet-500', 'bg-violet-50');
+};
+
+dropZone.ondragleave = () => {
+    dropZone.classList.remove('border-violet-500', 'bg-violet-50');
+};
+
+dropZone.ondrop = (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-violet-500', 'bg-violet-50');
+    const file = e.dataTransfer.files[0];
+    handleDatasetUpload(file);
+};
+
+// Handle file selection via click
+datasetInput.onchange = (e) => {
+    const file = e.target.files[0];
+    handleDatasetUpload(file);
+};
+
+async function handleDatasetUpload(file) {
+    if (!file || !file.name.endsWith('.csv')) {
+        showMessage("Please upload a valid .csv file", "error");
+        return;
+    }
+
+    // Show filename in UI
+    $('#selected-filename').textContent = file.name;
+    $('#file-selected-info').classList.remove('hidden');
+    $('#drop-zone-text').classList.add('hidden');
+
+    const formData = new FormData();
+    formData.append('dataset', file);
+    const token = localStorage.getItem('jwtToken');
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/upload-dataset`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            showMessage(`Dataset "${file.name}" uploaded!`, "success");
+            $('#file-selected-info').classList.replace('bg-violet-100', 'bg-green-100');
+            $('#file-selected-info').classList.replace('text-violet-700', 'text-green-700');
+            $('#file-selected-info').classList.remove('animate-pulse');
+        } else {
+            showMessage(data.message || "Upload failed", "error");
+        }
+    } catch (err) {
+        showMessage("Connection error", "error");
+    }
+}
+
+// Trigger Retraining Logic
+$('#retrain-btn').onclick = async () => {
+    const btn = $('#retrain-btn');
+    const token = localStorage.getItem('jwtToken');
+    
+    btn.disabled = true;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = `<i class="fa-solid fa-gear fa-spin mr-2"></i> Training AI...`;
+    
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/retrain`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+            showMessage("Model Retrained Successfully!", "success");
+            
+            // Update the UI Card with results
+            $('#training-metrics-card').classList.remove('hidden');
+            $('#ui-accuracy-val').textContent = `Accuracy: ${data.accuracy || '90.0'}%`;
+            $('#ui-last-trained').textContent = `Last Trained: ${new Date().toLocaleTimeString()}`;
+            $('#ui-dataset-name').textContent = data.fileName || "latest_upload.csv";
+        } else {
+            showMessage(data.message || "Retraining failed", "error");
+        }
+    } catch (err) {
+        showMessage("Connection error", "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+};
+
+let feedbackChart = null;
+
+// index.html - Update the loadFeedbackAnalytics function
+async function loadFeedbackAnalytics() {
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/feedback-analytics`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        // 1. Render the "Average Rating vs. Predicted Role" Chart
+        const ctx = document.getElementById('feedbackChart').getContext('2d');
+        if (feedbackChart) feedbackChart.destroy();
+
+        feedbackChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels, // Predicted Roles
+                datasets: [{
+                    label: 'Avg Rating (1-5 Stars)',
+                    data: data.chartData, // Calculated Averages
+                    backgroundColor: 'rgba(124, 58, 237, 0.6)',
+                    borderColor: '#7C3AED',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { min: 0, max: 5 } }
+            }
+        });
+
+        // 2. Render the Detailed Feedback List (Names, Roles, Ratings, Comments)
+        const feedbackList = $('#admin-feedback-list');
+        if (!feedbackList) return;
+        
+        feedbackList.innerHTML = data.detailedFeedback.map(fb => `
+            <div class="p-5 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 mb-4 shadow-sm transition-hover hover:shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h4 class="font-bold text-gray-800 dark:text-gray-100 text-base">${fb.username}</h4>
+                        <p class="text-xs font-semibold text-violet-600 uppercase tracking-tight">
+                            Matched: ${fb.predictedRole}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-amber-500 text-sm mb-1">
+                            ${'★'.repeat(fb.rating)}${'☆'.repeat(5 - fb.rating)}
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">
+                            ${new Date(fb.date).toLocaleDateString()}
+                        </span>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border-l-4 border-violet-500 shadow-inner">
+                    <p class="text-sm text-gray-600 dark:text-gray-300 italic">
+                        <i class="fa-solid fa-quote-left mr-2 opacity-20"></i>
+                        ${fb.comment}
+                    </p>
+                </div>
+            </div>
+        `).join('') || '<p class="text-center text-gray-400 p-10">No feedback entries found.</p>';
+
+    } catch (err) {
+        console.error("Feedback Analytics Update Error:", err);
+    }
+}
+
+
+// Force Logout Logic
+const logoutBtn = $('#logout-btn');
+if (logoutBtn) {
+    logoutBtn.onclick = () => {
+        localStorage.removeItem('jwtToken'); // Clear the session
+        localStorage.removeItem('userRole');
+        window.location.reload(); // Refresh to show login screen
+    };
+}
+function drawSankey() {
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'From');
+  data.addColumn('string', 'To');
+  data.addColumn('number', 'Weight');
+  data.addRows([
+    [ 'B.Sc CS', 'Web Developer', 45 ],
+    [ 'B.Sc CS', 'Data Analyst', 12 ],
+    [ 'B.Tech IT', 'Software Engineer', 60 ],
+    // These values should come from your /stats/degree-job API
+  ]);
+
+  var chart = new google.visualization.Sankey(document.getElementById('sankey_chart'));
+  chart.draw(data);
+}
+// Load the visualization API and the sankey package
+google.charts.load('current', {'packages':['sankey']});
+
+async function drawSankeyChart() {
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/stats/sankey-data`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const rows = await res.json();
+
+        if (rows.length === 0) return;
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Weight');
+        data.addRows(rows);
+
+        // Sets chart options.
+        var options = {
+            width: '100%',
+            sankey: {
+                node: { 
+                    colors: ['#7C3AED', '#4F46E5', '#10B981', '#F59E0B'],
+                    label: { fontSize: 12, fontWeight: 'bold' } 
+                },
+                link: { colorMode: 'gradient', colors: ['#A78BFA', '#818CF8'] }
+            }
+        };
+
+        // Instantiates and draws our chart, passing in some options.
+        var chart = new google.visualization.Sankey(document.getElementById('sankey_chart'));
+        chart.draw(data, options);
+    } catch (err) {
+        console.error("Sankey Load Error:", err);
+    }
+}
+
+// Update your Sidebar Navigation to trigger this
+// Inside your $$('.sidebar-link').forEach(link => { ... })
+if (targetId === 'admin-stats') {
+    fetchAdminStats();
+    google.charts.setOnLoadCallback(drawSankeyChart); // Trigger the Sankey
+}
+
+async function drawUserSankey() {
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/stats/my-career-flows`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const rows = await res.json();
+
+        const container = document.getElementById('user_sankey_chart');
+        if (rows.length === 0) {
+            container.innerHTML = `<p class="text-center text-gray-400 py-10 italic">Not enough peer data yet to map your degree flows.</p>`;
+            return;
+        }
+
+        const data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Weight');
+        data.addRows(rows);
+
+        const options = {
+            width: '100%',
+            sankey: {
+                node: { 
+                    colors: ['#7C3AED', '#10B981', '#3B82F6', '#F59E0B'],
+                    label: { fontSize: 11, fontName: 'Inter', fontWeight: 'bold' } 
+                },
+                link: { colorMode: 'gradient', colors: ['#A78BFA', '#34D399'] }
+            }
+        };
+
+        const chart = new google.visualization.Sankey(container);
+        chart.draw(data, options);
+    } catch (err) {
+        console.error("User Sankey Error:", err);
+    }
+}
+</script>
+
+</body>
+</html>

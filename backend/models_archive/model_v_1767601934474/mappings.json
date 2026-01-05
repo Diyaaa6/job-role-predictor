@@ -1,0 +1,43 @@
+{
+  "degree": {
+    "b.tech": 1,
+    "btech": 1,
+    "m.tech": 2,
+    "mtech": 2,
+    "b.sc": 3,
+    "bsc": 3,
+    "m.sc": 4,
+    "msc": 4,
+    "bca": 5,
+    "mca": 6,
+    "bba": 7,
+    "mba": 8,
+    "artificial intelligence": 9,
+    "ai": 9,
+    "computer science": 10,
+    "cs": 10,
+    "information technology": 11,
+    "it": 11
+  },
+  "spec": {
+    "artificial intelligence": 1,
+    "ai": 1,
+    "machine learning": 2,
+    "ml": 2,
+    "data science": 3,
+    "ds": 3,
+    "web development": 4,
+    "web dev": 4,
+    "app development": 5,
+    "mobile dev": 5,
+    "cyber security": 6,
+    "cybersecurity": 6,
+    "cloud computing": 7,
+    "cloud": 7,
+    "blockchain": 8,
+    "software engineering": 9,
+    "se": 9,
+    "networking": 10,
+    "networks": 10
+  }
+}

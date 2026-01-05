@@ -1,0 +1,52 @@
+degree,specialization,cgpa,internship,projects,skills,job_role
+B.Tech CS,Computer Science,8.5,Yes,4,"Python, Java, SQL, Git",Software Engineer
+B.Tech CS,Software Engineering,8.0,Yes,3,"Java, Spring, MySQL",Software Engineer
+M.Sc CS,Cloud Computing,8.2,No,3,"Docker, Kubernetes, AWS",Software Engineer
+B.Tech IT,DevOps,8.4,Yes,4,"Jenkins, Ansible, Docker, Shell Scripting",Software Engineer
+M.Tech CS,Distributed Systems,8.8,Yes,5,"C++, Go, Kubernetes, Kafka",Software Engineer
+M.Tech CS,Backend Development,8.6,Yes,4,"Java, Node.js, Redis, MongoDB",Software Engineer
+B.Tech CS,Cloud Architecture,8.3,Yes,3,"AWS, Azure, Terraform",Software Engineer
+B.Tech CS,Systems Programming,8.1,Yes,3,"Rust, C++, Linux",Software Engineer
+B.Sc CS,Information Technology,7.2,No,2,"HTML, CSS, JavaScript, React",Web Developer
+BCA,Web Development,7.5,Yes,3,"JavaScript, PHP, Laravel",Web Developer
+BCA,Application Development,7.8,Yes,3,"SQL, PHP, JavaScript, Bootstrap",Web Developer
+B.Tech IT,Blockchain Technology,8.1,Yes,3,"Solidity, JavaScript, Web3.js, Ether.js",Web Developer
+BCA,Full Stack Development,7.1,Yes,3,"Node.js, Express, MongoDB, Angular",Web Developer
+BCA,Frontend Dev,7.4,No,3,"React, Tailwind, HTML",Web Developer
+B.Sc CS,Web Systems,7.0,No,2,"HTML, CSS, PHP",Web Developer
+B.Tech CS,Frontend Engineering,7.7,No,3,"Vue.js, Tailwind, JavaScript, SASS",Web Developer
+M.Tech AI,Artificial Intelligence,9.1,Yes,5,"Python, PyTorch, Scikit-learn, AWS",ML Engineer
+M.Sc CS,Machine Learning,8.7,Yes,4,"Python, TensorFlow, Keras, OpenCV",ML Engineer
+M.Tech AI,Deep Learning,9.3,Yes,6,"Python, PyTorch, Cuda, NLP",ML Engineer
+B.Sc CS,Data Mining,8.9,Yes,4,"Python, SQL, SAS, BigQuery",ML Engineer
+M.Tech AI,Computer Vision,9.0,Yes,5,"Python, OpenCV, TensorFlow",ML Engineer
+M.Tech AI,Natural Language Processing,9.2,Yes,5,"Python, Transformers, BERT",ML Engineer
+M.Tech AI,Reinforcement Learning,9.4,Yes,5,"Python, Gym, Ray",ML Engineer
+PhD CS,Data Science,9.5,Yes,6,"R, Python, Spark, Hadoop, Statistics",Data Analyst
+B.Tech CS,Data Analytics,7.5,Yes,2,"Excel, SQL, Tableau, PowerBI",Data Analyst
+B.Sc CS,Database Management,7.6,No,2,"SQL, Oracle, MongoDB, Python",Data Analyst
+B.Tech CS,Big Data,8.3,Yes,5,"Hadoop, Scala, SQL, Hive",Data Analyst
+M.Sc CS,Business Intelligence,8.2,Yes,3,"PowerBI, Tableau, SQL",Data Analyst
+M.Sc CS,Data Engineering,8.5,Yes,4,"Python, Airflow, Snowflake",Data Analyst
+M.Sc CS,Quantitative Analysis,8.8,Yes,4,"Python, Pandas, NumPy, Statistics",Data Analyst
+B.Sc CS,Statistical Modeling,8.4,No,3,"Python, R, Excel",Data Analyst
+B.Tech IT,Cyber Security,8.2,Yes,4,"Linux, Nmap, Wireshark, Metasploit",Cyber Security Analyst
+BCA,Network Security,7.4,No,2,"Firewalls, Cisco, Python, Bash",Cyber Security Analyst
+B.Tech IT,Information Security,8.0,Yes,3,"Linux, Python, PenTesting",Cyber Security Analyst
+B.Tech IT,Cyber Security,8.3,Yes,4,"Linux, Nmap, Python",Cyber Security Analyst
+BCA,Network Security,7.5,No,2,"Firewalls, Cisco, Bash",Cyber Security Analyst
+B.Tech IT,SOC Analyst,7.9,No,2,"Splunk, Wireshark, Linux",Cyber Security Analyst
+B.Tech IT,Penetration Testing,8.5,Yes,4,"Burp Suite, Metasploit, Kali",Cyber Security Analyst
+B.Tech IT,Cloud Security,8.6,Yes,4,"AWS Security, IAM, CloudTrail",Cyber Security Analyst
+BCA,UI/UX Design,7.9,Yes,4,"Figma, Adobe XD, HTML, CSS",UI/UX Designer
+B.Tech IT,Product Design,8.0,Yes,3,"Sketch, Figma, Interaction Design",UI/UX Designer
+B.Sc CS,Visual Communication,7.5,No,2,"Adobe Suite, HTML, CSS",UI/UX Designer
+BCA,UI/UX Design,8.1,Yes,4,"Figma, HTML, CSS",UI/UX Designer
+B.Tech IT,Product Design,8.2,Yes,3,"Figma, Interaction",UI/UX Designer
+BCA,Graphic Design,7.3,No,2,"Photoshop, Illustrator, Figma",UI/UX Designer
+B.Sc CS,Interface Design,7.6,No,3,"InVision, Figma, CSS",UI/UX Designer
+B.Tech CS,Mobile Development,8.2,Yes,4,"Flutter, Dart, Firebase",Mobile Developer
+B.Sc CS,Mobile Development,7.0,No,3,"Swift, Kotlin, Firebase, Git",Mobile Developer
+B.Tech CS,Android Dev,7.5,Yes,3,"Kotlin, Java, Android Studio",Mobile Developer
+BCA,iOS Development,7.2,No,2,"Swift, Objective-C, Xcode",Mobile Developer
+B.Tech CS,Mobile App Architect,8.8,Yes,5,"React Native, Redux, Node.js",Mobile Developer
